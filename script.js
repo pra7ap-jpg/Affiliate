@@ -8,9 +8,25 @@ const pages = {
         <header class="hero">
             <h1>Premium Gear. <br><span class="highlight">Unbeatable Prices.</span></h1>
         </header>
+
+        <section class="info-section">
+            <div class="info-box">
+                <h3>⚡ Live Updates</h3>
+                <p>Prices and stock status are tracked and updated dynamically.</p>
+            </div>
+            <div class="info-box highlight-box">
+                <h3>🤝 Affiliate Disclosure</h3>
+                <p>We earn a small commission from retailers if you buy through our links, at zero extra cost to you.</p>
+            </div>
+            <div class="info-box">
+                <h3>🛡️ Verified Deals</h3>
+                <p>We filter out fake discounts so you only see genuine price drops.</p>
+            </div>
+        </section>
+
         <div id="categoryFilters" class="filter-container"></div>
         <main class="grid-container" id="productsGrid">
-            <div class="loading">Fetching the latest deals...</div>
+            <div class="loading" style="grid-column: 1/-1; text-align: center; font-weight: 800; padding: 40px; font-size: 1.1rem;">Fetching the latest deals...</div>
         </main>
     `,
     about: `
@@ -59,7 +75,7 @@ const pages = {
             <p>Email: <strong>partnerships@fridaydeals.online</strong></p>
             <h2>General Inquiries & Bug Reports</h2>
             <p>Email: <strong>support@fridaydeals.online</strong></p>
-            <hr style="margin: 40px 0; border: 1px solid #e2e8f0;">
+            <hr style="border: 1px solid #111; margin: 40px 0;">
             <h2>⚠️ Important Customer Service Notice</h2>
             <p>Please note that FridayDeals.online is a deal discovery engine. <strong>We do not sell products directly.</strong> If you have an issue regarding order tracking, refunds, or returns, you must contact the retailer where the transaction took place.</p>
         </main>
@@ -100,7 +116,6 @@ function handleRouting() {
 
 // --- DATA FETCHING & FILTERING ---
 function fetchDeals() {
-    // Cache buster appended directly to your API route
     const freshUrl = '/api/deals?t=' + Date.now();
     
     fetch(freshUrl)
@@ -110,10 +125,8 @@ function fetchDeals() {
                 header: true,
                 skipEmptyLines: true,
                 complete: function(results) {
-                    // Reverses array to show newest additions first
                     allProducts = results.data.reverse(); 
                     
-                    // Only render if we are currently on the home page
                     if (window.location.hash === '' || window.location.hash === '#home') {
                         renderFilters();
                         applyFilters();
@@ -124,7 +137,7 @@ function fetchDeals() {
         .catch(err => {
             console.error("Error fetching deals:", err);
             const grid = document.getElementById('productsGrid');
-            if(grid) grid.innerHTML = '<div style="color: #f8fafc; text-align: center; width: 100%;">Failed to load deals.</div>';
+            if(grid) grid.innerHTML = '<div style="color: #111; grid-column: 1/-1; text-align: center; padding: 40px; font-weight: 800;">Failed to load deals.</div>';
         });
 }
 
@@ -153,12 +166,10 @@ function handleSearch(e) {
 function applyFilters() {
     let filtered = allProducts;
     
-    // 1. Filter by Category
     if (activeCategory !== 'All') {
         filtered = filtered.filter(p => (p.Category || p.category) === activeCategory);
     }
     
-    // 2. Filter by Search Term
     if (currentSearchTerm) {
         filtered = filtered.filter(p => {
             const title = (p.Title || p.title || '').toLowerCase();
@@ -174,7 +185,7 @@ function renderProducts(products) {
     if (!grid) return;
 
     if (products.length === 0) {
-        grid.innerHTML = '<div style="color: #94a3b8; grid-column: 1 / -1; text-align: center; padding: 40px 0;">No deals found matching your search.</div>';
+        grid.innerHTML = '<div style="color: #111; grid-column: 1 / -1; text-align: center; padding: 40px 0; font-weight: 800;">No deals found matching your search.</div>';
         return;
     }
 
@@ -185,7 +196,6 @@ function renderProducts(products) {
         const img = product.ImageURL || product.image || '';
         const link = product.AffiliateLink || product.link || '#';
 
-        // Outputs using the Glassmorphism CSS structure
         return `
             <div class="product-card">
                 <img src="${img}" alt="${title}" loading="lazy">

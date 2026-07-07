@@ -8,16 +8,16 @@
     <style>
         body { font-family: 'Plus Jakarta Sans', sans-serif; background: #f4f4f0; padding: 40px; color: #111; }
         .admin-box { max-width: 500px; margin: 0 auto; background: #fff; padding: 30px; border: 3px solid #111; border-radius: 16px; box-shadow: 6px 6px 0px #111; }
-        input, select, button { width: 100%; margin-bottom: 20px; padding: 12px; border: 3px solid #111; border-radius: 8px; font-family: inherit; font-weight: 700; font-size: 1rem; }
+        input, select, button { width: 100%; margin-bottom: 20px; padding: 12px; border: 3px solid #111; border-radius: 8px; font-family: inherit; font-weight: 700; font-size: 1rem; box-sizing: border-box; }
         button { background: #baff29; cursor: pointer; transition: 0.2s; }
         button:hover { transform: translate(-2px, -2px); box-shadow: 4px 4px 0px #111; }
-        #status { font-weight: 800; text-align: center; }
+        #status { font-weight: 800; text-align: center; margin-top: 10px; }
     </style>
 </head>
 <body>
     <div class="admin-box">
         <h2>Add Amazon Deal</h2>
-        <input type="text" id="url" placeholder="Paste Amazon Link here">
+        <input type="text" id="url" placeholder="Paste full Amazon Link here (amazon.in/dp/...)">
         
         <select id="category">
             <option value="Tech">Tech</option>
@@ -26,7 +26,7 @@
             <option value="Gaming">Gaming</option>
         </select>
 
-        <button onclick="addDeal()">Send to Sheet</button>
+        <button onclick="addDeal()" id="submitBtn">Send to Sheet</button>
         <div id="status"></div>
     </div>
 
@@ -35,25 +35,64 @@
             const url = document.getElementById('url').value;
             const category = document.getElementById('category').value;
             const statusEl = document.getElementById('status');
+            const btn = document.getElementById('submitBtn');
             
-            statusEl.textContent = "Scraping and pushing to sheet...";
+            if (!url.includes('amazon')) {
+                statusEl.textContent = "Please enter a valid Amazon URL.";
+                statusEl.style.color = "red";
+                return;
+            }
+
+            // UI Loading State
+            statusEl.textContent = "Scraping Amazon (This takes 15-30 seconds. Do not close)...";
             statusEl.style.color = "#111";
+            btn.disabled = true;
+            btn.style.opacity = "0.5";
 
-            const res = await fetch('/api/add-deal', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ productUrl: url, category })
-            });
+            try {
+                // 1. Scrape the data directly from the browser
+                const scraperUrl = `https://api.scraperapi.com/?api_key=6455cbfb43dbb193447b5d8ae4ca31e4&autoparse=true&url=${encodeURIComponent(url)}`;
+                const scraperRes = await fetch(scraperUrl);
+                const product = await scraperRes.json();
 
-            const data = await res.json();
-            
-            if (res.ok) {
-                statusEl.textContent = "Success! Deal added.";
+                if (!product || !product.name) {
+                    throw new Error("Scraper failed to find product data.");
+                }
+
+                // 2. Format it cleanly for the sheet
+                const payload = {
+                    title: product.name || product.title || 'Untitled',
+                    category: category,
+                    price: product.pricing || product.price || '',
+                    oldPrice: product.list_price || product.rrp || '',
+                    image: (product.images && product.images[0]) ? product.images[0] : '',
+                    link: url + '?tag=fridaydeals-21', // Adds your affiliate tag
+                    platform: 'Amazon'
+                };
+
+                // 3. Send straight to Google Apps Script
+                statusEl.textContent = "Saving to Google Sheet...";
+                
+                await fetch("https://script.google.com/macros/s/AKfycbyudKVJfTqmFZ7Pr33X6sWAvMhYuETeD7l_Gmz3z79dz8iSUzMp_-WTHNg1EPLiTgi8/exec", {
+                    method: "POST",
+                    mode: "no-cors", // Prevents browser security blocks
+                    headers: {
+                        "Content-Type": "text/plain" 
+                    },
+                    body: JSON.stringify(payload)
+                });
+
+                statusEl.textContent = "Success! Deal added to sheet.";
                 statusEl.style.color = "green";
                 document.getElementById('url').value = '';
-            } else {
-                statusEl.textContent = "Error: " + data.error;
+
+            } catch (err) {
+                console.error(err);
+                statusEl.textContent = "Error: " + err.message;
                 statusEl.style.color = "red";
+            } finally {
+                btn.disabled = false;
+                btn.style.opacity = "1";
             }
         }
     </script>

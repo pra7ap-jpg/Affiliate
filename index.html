@@ -3,29 +3,30 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Curated Deals</title>
-    <!-- Premium Font -->
+    <title>FridayDeals</title>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <!-- Ambient glow behind the glass -->
     <div class="ambient-bg"></div>
     
-    <header class="glass-header">
-        <h1>Premium Deals</h1>
-        <div id="filterContainer" class="filter-scroll">
-            <!-- Filters will be injected here by script.js -->
+    <nav class="glass-navbar">
+        <div class="nav-content">
+            <a href="#home" class="logo">FridayDeals</a>
+            
+            <input type="text" id="searchInput" placeholder="Search deals..." class="search-bar">
+            
+            <div class="nav-links">
+                <a href="#about">About</a>
+                <a href="#privacy">Privacy</a>
+                <a href="#terms">Terms</a>
+                <a href="#contact">Contact</a>
+            </div>
         </div>
-    </header>
+    </nav>
 
-    <main class="container">
-        <div id="productsGrid" class="bento-grid">
-            <!-- Product cards will be injected here by script.js -->
-        </div>
-    </main>
+    <div id="app-root"></div>
 
-    <!-- CSV Parser & Your Script -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.2/papaparse.min.js"></script>
     <script src="script.js"></script>
 </body>

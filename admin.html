@@ -63,7 +63,7 @@
 
                 try {
                     // Build ScraperAPI URL. We add &follow_redirect=true to force short links to resolve first
-                    const scraperUrl = `https://api.scraperapi.com/?api_key=6455cbfb43dbb193447b5d8ae4ca31e4&autoparse=true&follow_redirect=true&url=${encodeURIComponent(url)}`;
+                    const scraperUrl = `https://api.scraperapi.com/?api_key=6455cbfb43dbb193447b5d8ae4ca31e4&autoparse=true&premium=true&follow_redirect=true&url=${encodeURIComponent(url)}`;
                     
                     const scraperRes = await fetch(scraperUrl);
                     const responseText = await scraperRes.text(); // Get raw text first to avoid JSON crash

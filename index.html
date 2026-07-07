@@ -3,16 +3,20 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Curated Deals</title>
+    <title>FridayDeals.online | Premium Gear & Discounts</title>
     <link rel="stylesheet" href="style.css">
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;700;800&display=swap" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
 </head>
 <body>
+    <div class="disclosure-bar">
+        <strong>Transparency Note:</strong> FridayDeals is reader-supported. When you buy through our links, we may earn an affiliate commission at zero cost to you.
+    </div>
+
     <nav class="navbar">
         <div class="nav-wrapper">
-            <div class="logo">Curated<span>.</span></div>
-            <input type="text" id="searchInput" class="search-box" placeholder="Search gear...">
+            <a href="index.html" class="logo">Friday<span>Deals</span></a>
+            <input type="text" id="searchInput" class="search-box" placeholder="Search for gear...">
         </div>
     </nav>
 
@@ -23,6 +27,31 @@
     <main class="grid-container" id="productsGrid">
         <div class="loading">Fetching the latest deals...</div>
     </main>
+
+    <footer class="site-footer">
+        <div class="footer-wrapper">
+            <div class="footer-brand">
+                <div class="logo">Friday<span>Deals</span>.online</div>
+                <p>We track, verify, and curate the best deals on the internet so you don't have to.</p>
+            </div>
+            <div class="footer-links">
+                <div class="link-column">
+                    <h4>Company</h4>
+                    <a href="about.html">About Us</a>
+                    <a href="contact.html">Contact</a>
+                </div>
+                <div class="link-column">
+                    <h4>Legal</h4>
+                    <a href="privacy.html">Privacy Policy</a>
+                    <a href="terms.html">Terms & Conditions</a>
+                </div>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2026 FridayDeals.online. All Rights Reserved.</p>
+            <p class="small-text">Amazon and the Amazon logo are trademarks of Amazon.com, Inc. or its affiliates.</p>
+        </div>
+    </footer>
 
     <script src="script.js"></script>
 </body>

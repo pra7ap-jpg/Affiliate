@@ -20,67 +20,71 @@ overlay.addEventListener('click', toggleDrawer);
 const pages = {
     home: `
         <section class="trust-banner">
-            <h1>Curated. Verified. Unbeatable.</h1>
-            <div class="trust-grid">
-                <div class="trust-card">
-                    <h3>🛡️ Strict Verification</h3>
-                    <p>Every deal is analyzed against historical pricing data to ensure the discount is genuine.</p>
+            <div class="hero-grid">
+                <div class="hero-title">
+                    <h1>Data<br>Driven<br>Deals.</h1>
                 </div>
-                <div class="trust-card">
-                    <h3>⚡ Direct to Retailer</h3>
-                    <p>No middlemen. Clicking a deal takes you straight to the official Amazon or Flipkart product page.</p>
-                </div>
-                <div class="trust-card">
-                    <h3>🎯 Quality Filtered</h3>
-                    <p>We bypass the junk and only curate products with high consumer utility and brand reputation.</p>
+                <div class="hero-stats">
+                    <div class="stat-box">
+                        <h3>01. Verification</h3>
+                        <p>Strict historical pricing analysis ensures discounts are mathematically genuine.</p>
+                    </div>
+                    <div class="stat-box">
+                        <h3>02. Direct Access</h3>
+                        <p>Zero middlemen. Links route directly to the official retail landing pages.</p>
+                    </div>
+                    <div class="stat-box">
+                        <h3>03. Curation</h3>
+                        <p>Aggressive filtering removes counterfeit brands and low-utility consumer junk.</p>
+                    </div>
                 </div>
             </div>
         </section>
 
         <main class="grid-container" id="productsGrid">
-            <div style="grid-column: 1/-1; text-align: center; font-weight: 800; padding: 60px; font-size: 1.2rem; color: #718096;">
-                Hunting the latest deals...
+            <div style="grid-column: 1/-1; text-align: center; font-weight: 800; padding: 60px; font-size: 1.2rem; text-transform: uppercase;">
+                Fetching Database...
             </div>
         </main>
 
         <section class="full-disclosure">
-            <h2>Our Affiliate Model & Transparency</h2>
-            <p><strong>How we keep this free:</strong> FridayDeals.online is a reader-supported deal curation engine. When you click on links to various merchants on this site and make a purchase, this can result in this site earning a referral commission.</p>
-            <p><strong>Does this cost you extra?</strong> Absolutely not. The commission is paid entirely by the retailer out of their profit margin. The price you pay at checkout is exactly the same whether you use our tracking link or find the item independently.</p>
-            <p>We are independently owned and the opinions expressed here are our own. We never allow brands to pay for artificial deal placement.</p>
+            <h2>Affiliate Transparency</h2>
+            <p><strong>Operational Model:</strong> FridayDeals is a reader-supported curation engine. Outbound clicks resulting in a purchase may generate a referral commission.</p>
+            <p><strong>Consumer Impact:</strong> The commission is levied entirely on the retailer's margin. The checkout price remains fundamentally identical whether routed through our tracking architecture or accessed independently.</p>
+            <p>We maintain independent operational control. Sponsored artificial deal placement is strictly prohibited.</p>
         </section>
     `,
     about: `
         <main class="page-container">
-            <h1>About FridayDeals</h1>
+            <h1>About</h1>
             <p>We are a dedicated curation platform built for consumers who value performance, quality, and rigorous deal verification.</p>
-            <h2>Our Mission</h2>
+            <h2>Mission Statement</h2>
             <p>The modern e-commerce landscape is flooded with inflated retail prices, counterfeit discounts, and overwhelming choice paralysis. Our core mission is to cut through the noise. We leverage analytical market tracking to identify genuine price drops.</p>
         </main>
     `,
     privacy: `
         <main class="page-container">
             <h1>Privacy Policy</h1>
-            <p>At FridayDeals.online, we believe in minimal data collection. We do not require account creation, and we do not collect personally identifiable information (PII).</p>
-            <h2>Cookies and Tracking Technologies</h2>
-            <p>We use cookies solely to facilitate our affiliate tracking. When you click an outbound link, an affiliate cookie is placed on your browser to inform the retailer that FridayDeals referred you.</p>
+            <p>At FridayDeals, we operate on minimal data collection. We do not mandate account creation, nor do we harvest personally identifiable information (PII).</p>
+            <h2>Tracking Protocols</h2>
+            <p>We utilize cookies strictly to facilitate affiliate routing. Upon clicking an outbound link, an affiliate token is lodged in your browser to inform the retailer of the referral origin.</p>
         </main>
     `,
     terms: `
         <main class="page-container">
-            <h1>Terms & Conditions</h1>
-            <h2>Platform Function</h2>
-            <p>FridayDeals.online operates exclusively as a curation and referral platform. We do not hold inventory, process payments, or manage order fulfillment.</p>
+            <h1>Terms</h1>
+            <h2>Platform Architecture</h2>
+            <p>FridayDeals operates exclusively as a curation node. We hold zero physical inventory, process zero payments, and manage zero fulfillment logistics.</p>
             <h2>Pricing Volatility</h2>
-            <p>We continuously monitor our data feeds, but e-commerce pricing is highly volatile. <strong>The final price you pay is the price displayed on the retailer's checkout page.</strong></p>
+            <p>Data feeds are continuously synchronized, however, retail pricing is volatile. <strong>The final executable price is determined exclusively by the retailer at checkout.</strong></p>
         </main>
     `,
     contact: `
         <main class="page-container">
-            <h1>Contact Us</h1>
-            <p>Email: <strong>partnerships@fridaydeals.online</strong></p>
-            <h2>⚠️ Important Notice</h2>
-            <p><strong>We do not sell products directly.</strong> If you have an issue regarding order tracking, refunds, or returns, you must contact Amazon or Flipkart directly.</p>
+            <h1>Contact</h1>
+            <p>Email routing: <strong>partnerships@fridaydeals.online</strong></p>
+            <h2>Support Notice</h2>
+            <p><strong>We do not process transactions.</strong> Logistics, tracking, or refund inquiries must be directed to the corresponding retailer (Amazon/Flipkart).</p>
         </main>
     `
 };
@@ -144,7 +148,7 @@ function fetchDeals() {
         })
         .catch(err => {
             const grid = document.getElementById('productsGrid');
-            if(grid) grid.innerHTML = '<div style="grid-column: 1/-1; text-align: center; padding: 40px; font-weight: 800; color: #718096;">Failed to load deals. Check your connection.</div>';
+            if(grid) grid.innerHTML = '<div style="grid-column: 1/-1; text-align: center; padding: 40px; font-weight: 800; text-transform: uppercase;">Connection Terminated. Check Network.</div>';
         });
 }
 
@@ -193,12 +197,12 @@ function renderProducts(products) {
     if (!grid) return;
 
     if (products.length === 0) {
-        grid.innerHTML = '<div style="grid-column: 1 / -1; text-align: center; padding: 40px 0; font-weight: 800; color: #718096;">No deals found matching your search.</div>';
+        grid.innerHTML = '<div style="grid-column: 1 / -1; text-align: center; padding: 40px 0; font-weight: 800; text-transform: uppercase;">0 Results Found.</div>';
         return;
     }
 
     grid.innerHTML = products.map(product => {
-        const title = product.Title || product.title || 'Deal of the Day';
+        const title = product.Title || product.title || 'Untitled Asset';
         const price = product.Price || product.price || '';
         const oldPrice = product.OldPrice || product.oldPrice || '';
         const img = product.ImageURL || product.image || '';
@@ -212,7 +216,7 @@ function renderProducts(products) {
                     <span class="price">${price}</span>
                     <span class="old-price">${oldPrice}</span>
                 </div>
-                <div class="buy-btn-visual">Grab Deal</div>
+                <div class="buy-btn-visual">Execute Purchase</div>
             </a>
         `;
     }).join('');

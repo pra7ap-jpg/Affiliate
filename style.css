@@ -553,3 +553,42 @@ footer {
     .search-bar input:focus { width: 180px; }
 }
 
+/* --- CATEGORY FILTERS --- */
+.filter-container {
+    max-width: 1200px;
+    margin: 0 auto 30px;
+    padding: 0 24px;
+    display: flex;
+    gap: 12px;
+    overflow-x: auto;
+    scrollbar-width: none; /* Hides scrollbar in Firefox */
+}
+
+.filter-container::-webkit-scrollbar {
+    display: none; /* Hides scrollbar in Chrome/Safari */
+}
+
+.filter-btn {
+    background: #ffffff;
+    border: var(--border-thick);
+    padding: 8px 20px;
+    border-radius: 99px;
+    font-family: inherit;
+    font-weight: 700;
+    font-size: 0.9rem;
+    cursor: pointer;
+    white-space: nowrap;
+    box-shadow: 3px 3px 0px #111;
+    transition: all 0.2s;
+    color: var(--text-main);
+}
+
+.filter-btn:hover {
+    transform: translate(-2px, -2px);
+    box-shadow: 5px 5px 0px #111;
+}
+
+.filter-btn.active {
+    background: var(--text-main);
+    color: #ffffff;
+}

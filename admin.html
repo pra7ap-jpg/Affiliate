@@ -5,20 +5,19 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="robots" content="noindex, nofollow">
     <title>LinkFeed | Private</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;700;800&display=swap" rel="stylesheet">
     <style>
-        body { 
-            font-family: 'Plus Jakarta Sans', sans-serif; 
-            background: #f4f4f0; padding: 40px; color: #111; 
-            /* Disable text selection */
-            -webkit-user-select: none; user-select: none;
-        }
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background: #f4f4f0; padding: 40px; color: #111; -webkit-user-select: none; user-select: none; }
         .admin-box { max-width: 600px; margin: 0 auto; background: #fff; padding: 30px; border: 3px solid #111; border-radius: 16px; box-shadow: 6px 6px 0px #111; }
-        textarea, select, button { width: 100%; margin-bottom: 20px; padding: 12px; border: 3px solid #111; border-radius: 8px; font-family: inherit; font-weight: 700; font-size: 1rem; box-sizing: border-box; }
+        textarea, select, button, input { width: 100%; margin-bottom: 20px; padding: 12px; border: 3px solid #111; border-radius: 8px; font-family: inherit; font-weight: 700; font-size: 1rem; box-sizing: border-box; }
         button { background: #baff29; cursor: pointer; transition: 0.2s; }
-        #status { font-weight: 800; text-align: left; margin-top: 10px; line-height: 1.5; white-space: pre-wrap;}
+        button:hover:not(:disabled) { transform: translate(-2px, -2px); box-shadow: 4px 4px 0px #111; }
+        #status { font-weight: 800; text-align: left; margin-top: 10px; line-height: 1.5; white-space: pre-wrap; font-size: 0.9rem;}
     </style>
 </head>
-<body oncontextmenu="return false;"> <div class="admin-box" id="authBox">
+<body oncontextmenu="return false;">
+
+    <div class="admin-box" id="authBox">
         <h2>Enter Admin Password</h2>
         <input type="password" id="password" placeholder="Password">
         <button onclick="checkPassword()">Access Feed</button>
@@ -26,37 +25,79 @@
 
     <div class="admin-box" id="feedBox" style="display:none;">
         <h2>Bulk Add Deals</h2>
-        <textarea id="urls" rows="6"></textarea>
+        <textarea id="urls" rows="6" placeholder="Paste Amazon/Flipkart links here..."></textarea>
         <select id="category">
             <option value="Tech">Tech</option>
             <option value="Audio">Audio</option>
             <option value="Lifestyle">Lifestyle</option>
+            <option value="Gaming">Gaming</option>
         </select>
         <button onclick="processLinks()" id="submitBtn">Process Links</button>
         <div id="status"></div>
     </div>
 
     <script>
-        // PASSWORD PROTECTION
         function checkPassword() {
-            const pass = document.getElementById('password').value;
-            // CHANGE "your_secret_password" TO WHATEVER YOU WANT
-            if (pass === "your_secret_password") { 
+            if (document.getElementById('password').value === "linkfeed111") { 
                 document.getElementById('authBox').style.display = 'none';
                 document.getElementById('feedBox').style.display = 'block';
-            } else {
-                alert("Incorrect Password");
-            }
+            } else { alert("Incorrect Password"); }
         }
 
-        // Disable keyboard shortcuts for inspect (F12, Ctrl+Shift+I, etc)
-        document.addEventListener('keydown', (e) => {
-            if (e.key === 'F12' || (e.ctrlKey && e.shiftKey && e.key === 'I')) {
-                e.preventDefault();
-            }
-        });
+        async function processLinks() {
+            const urlsInput = document.getElementById('urls').value.trim();
+            const category = document.getElementById('category').value;
+            const statusEl = document.getElementById('status');
+            const btn = document.getElementById('submitBtn');
+            const urls = urlsInput.split('\n').map(u => u.trim()).filter(u => u);
+            
+            btn.disabled = true;
+            statusEl.textContent = `Starting process for ${urls.length} links...\n`;
 
-        // ... [Insert your existing processLinks() function here] ...
+            for (let i = 0; i < urls.length; i++) {
+                let url = urls[i];
+                let platform = url.includes('amazon') || url.includes('amzn') ? 'Amazon' : (url.includes('flipkart') ? 'Flipkart' : 'Unknown');
+
+                try {
+                    const scraperUrl = `https://api.scraperapi.com/?api_key=6455cbfb43dbb193447b5d8ae4ca31e4&autoparse=true&premium=true&follow_redirect=true&url=${encodeURIComponent(url)}`;
+                    const res = await fetch(scraperUrl);
+                    const rawData = await res.text();
+                    const data = JSON.parse(rawData);
+
+                    let payload = {};
+
+                    if (platform === 'Amazon') {
+                        payload = {
+                            title: data.name || data.title || 'Untitled',
+                            category: category,
+                            price: data.pricing || data.price || '',
+                            oldPrice: data.list_price || data.rrp || '',
+                            image: (data.images && data.images[0]) ? data.images[0] : '',
+                            link: (url.includes('amzn.to') || url.includes('amzn.in') || url.includes('tag=')) ? url : (url.includes('?') ? `${url}&tag=affindi-21` : `${url}?tag=affindi-21`),
+                            platform: 'Amazon'
+                        };
+                    } else if (platform === 'Flipkart') {
+                        payload = {
+                            title: data.name || data.title || 'Untitled Flipkart Product',
+                            category: category,
+                            price: data.pricing || data.price || '',
+                            oldPrice: '',
+                            image: (data.images && data.images[0]) ? data.images[0] : '',
+                            link: url.split('?')[0],
+                            platform: 'Flipkart'
+                        };
+                    } else { throw new Error("Unsupported platform"); }
+
+                    await fetch("https://script.google.com/macros/s/AKfycbyudKVJfTqmFZ7Pr33X6sWAvMhYuETeD7l_Gmz3z79dz8iSUzMp_-WTHNg1EPLiTgi8/exec", {
+                        method: "POST", mode: "no-cors", headers: { "Content-Type": "text/plain" }, body: JSON.stringify(payload)
+                    });
+                    statusEl.textContent += `[${i+1}] ${platform} Success!\n`;
+                } catch (e) {
+                    statusEl.textContent += `[${i+1}] Error on ${platform}: ${e.message}\n`;
+                }
+            }
+            btn.disabled = false;
+        }
     </script>
 </body>
 </html>

@@ -3,118 +3,60 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin | Bulk Add Deals</title>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;700;800&display=swap" rel="stylesheet">
+    <meta name="robots" content="noindex, nofollow">
+    <title>LinkFeed | Private</title>
     <style>
-        body { font-family: 'Plus Jakarta Sans', sans-serif; background: #f4f4f0; padding: 40px; color: #111; }
+        body { 
+            font-family: 'Plus Jakarta Sans', sans-serif; 
+            background: #f4f4f0; padding: 40px; color: #111; 
+            /* Disable text selection */
+            -webkit-user-select: none; user-select: none;
+        }
         .admin-box { max-width: 600px; margin: 0 auto; background: #fff; padding: 30px; border: 3px solid #111; border-radius: 16px; box-shadow: 6px 6px 0px #111; }
         textarea, select, button { width: 100%; margin-bottom: 20px; padding: 12px; border: 3px solid #111; border-radius: 8px; font-family: inherit; font-weight: 700; font-size: 1rem; box-sizing: border-box; }
         button { background: #baff29; cursor: pointer; transition: 0.2s; }
-        button:hover:not(:disabled) { transform: translate(-2px, -2px); box-shadow: 4px 4px 0px #111; }
-        button:disabled { background: #ccc; cursor: not-allowed; }
         #status { font-weight: 800; text-align: left; margin-top: 10px; line-height: 1.5; white-space: pre-wrap;}
     </style>
 </head>
-<body>
-    <div class="admin-box">
-        <h2>Bulk Add Amazon Deals</h2>
-        <p style="font-size: 0.85rem; color: #555; margin-bottom: 10px;">Paste links here, one per line.</p>
-        
-        <textarea id="urls" rows="6" placeholder="https://amzn.to/example1&#10;https://amazon.in/dp/example2"></textarea>
-        
+<body oncontextmenu="return false;"> <div class="admin-box" id="authBox">
+        <h2>Enter Admin Password</h2>
+        <input type="password" id="password" placeholder="Password">
+        <button onclick="checkPassword()">Access Feed</button>
+    </div>
+
+    <div class="admin-box" id="feedBox" style="display:none;">
+        <h2>Bulk Add Deals</h2>
+        <textarea id="urls" rows="6"></textarea>
         <select id="category">
             <option value="Tech">Tech</option>
             <option value="Audio">Audio</option>
             <option value="Lifestyle">Lifestyle</option>
-            <option value="Gaming">Gaming</option>
         </select>
-
         <button onclick="processLinks()" id="submitBtn">Process Links</button>
         <div id="status"></div>
     </div>
 
     <script>
-        async function processLinks() {
-            const urlsInput = document.getElementById('urls').value.trim();
-            const category = document.getElementById('category').value;
-            const statusEl = document.getElementById('status');
-            const btn = document.getElementById('submitBtn');
-            
-            if (!urlsInput) {
-                statusEl.textContent = "Please paste at least one link.";
-                statusEl.style.color = "red";
-                return;
+        // PASSWORD PROTECTION
+        function checkPassword() {
+            const pass = document.getElementById('password').value;
+            // CHANGE "your_secret_password" TO WHATEVER YOU WANT
+            if (pass === "your_secret_password") { 
+                document.getElementById('authBox').style.display = 'none';
+                document.getElementById('feedBox').style.display = 'block';
+            } else {
+                alert("Incorrect Password");
             }
-
-            const urls = urlsInput.split('\n').map(u => u.trim()).filter(u => u);
-            
-            btn.disabled = true;
-            statusEl.textContent = `Found ${urls.length} links. Starting process...\n\n`;
-            statusEl.style.color = "#111";
-
-            for (let i = 0; i < urls.length; i++) {
-                let url = urls[i];
-                statusEl.textContent += `[${i + 1}/${urls.length}] Processing: ${url.substring(0, 40)}...\n`;
-                
-                if (!url.includes('amazon') && !url.includes('amzn')) {
-                    statusEl.textContent += `  -> Skipped: Not a valid Amazon link.\n`;
-                    continue;
-                }
-
-                try {
-                    // Build ScraperAPI URL. We add &follow_redirect=true to force short links to resolve first
-                    const scraperUrl = `https://api.scraperapi.com/?api_key=6455cbfb43dbb193447b5d8ae4ca31e4&autoparse=true&premium=true&follow_redirect=true&url=${encodeURIComponent(url)}`;
-                    
-                    const scraperRes = await fetch(scraperUrl);
-                    const responseText = await scraperRes.text(); // Get raw text first to avoid JSON crash
-
-                    let product;
-                    try {
-                        product = JSON.parse(responseText);
-                    } catch (e) {
-                        // If it's not JSON, ScraperAPI sent an HTML error page
-                        if (responseText.includes("Account suspended") || responseText.includes("unauthorized")) {
-                            throw new Error("ScraperAPI Key invalid or limit reached.");
-                        } else {
-                            throw new Error("Amazon blocked the scraper request. Try submitting this specific link again.");
-                        }
-                    }
-
-                    if (!product || (!product.name && !product.title)) {
-                        throw new Error("Could not extract product details from this page structure.");
-                    }
-
-                    // Format the payload cleanly
-                    const payload = {
-                        title: product.name || product.title || 'Untitled Product',
-                        category: category,
-                        price: product.pricing || product.price || '',
-                        oldPrice: product.list_price || product.rrp || '',
-                        image: (product.images && product.images[0]) ? product.images[0] : '',
-                        link: (url.includes('amzn.to') || url.includes('amzn.in') || url.includes('tag=')) 
-      ? url 
-      : (url.includes('?') ? `${url}&tag=affindi-21` : `${url}?tag=affindi-21`),
-                        platform: 'Amazon'
-                    };
-
-                    // Send straight to Google Sheets via Webhook
-                    await fetch("https://script.google.com/macros/s/AKfycbyudKVJfTqmFZ7Pr33X6sWAvMhYuETeD7l_Gmz3z79dz8iSUzMp_-WTHNg1EPLiTgi8/exec", {
-                        method: "POST",
-                        mode: "no-cors",
-                        headers: { "Content-Type": "text/plain" },
-                        body: JSON.stringify(payload)
-                    });
-
-                    statusEl.textContent += `  -> Success! Added to sheet.\n`;
-
-                } catch (err) {
-                    statusEl.textContent += `  -> Error: ${err.message}\n`;
-                }
-            }
-
-            statusEl.textContent += `\nAll done!`;
-            btn.disabled = false;
         }
+
+        // Disable keyboard shortcuts for inspect (F12, Ctrl+Shift+I, etc)
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'F12' || (e.ctrlKey && e.shiftKey && e.key === 'I')) {
+                e.preventDefault();
+            }
+        });
+
+        // ... [Insert your existing processLinks() function here] ...
     </script>
 </body>
 </html>

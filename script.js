@@ -1,40 +1,71 @@
+// PASTE YOUR PUBLISHED GOOGLE SHEET CSV LINK HERE:
+const SHEET_CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-YOUR-ID-HERE/pub?output=csv';
+
+let allProducts = [];
+
 document.addEventListener('DOMContentLoaded', () => {
-    const filterButtons = document.querySelectorAll('.filter-btn');
-    const productCards = document.querySelectorAll('.product-card');
-    const searchInput = document.getElementById('searchInput');
+    fetchProducts();
 
-    // Filter by Category Click Feature
-    filterButtons.forEach(button => {
-        button.addEventListener('click', () => {
-            // Remove active style from previous buttons
-            filterButtons.forEach(btn => btn.classList.remove('active'));
-            button.classList.add('active');
-
-            const filterValue = button.getAttribute('data-filter');
-
-            productCards.forEach(card => {
-                if (filterValue === 'all' || card.getAttribute('data-category') === filterValue) {
-                    card.style.display = 'flex';
-                } else {
-                    card.style.display = 'none';
-                }
-            });
-        });
-    });
-
-    // Real-time Search Input Filter
-    searchInput.addEventListener('input', (e) => {
+    // Setup Search
+    document.getElementById('searchInput').addEventListener('input', (e) => {
         const searchTerm = e.target.value.toLowerCase();
-
-        productCards.forEach(card => {
-            const title = card.querySelector('h3').textContent.toLowerCase();
-            const description = card.querySelector('.description').textContent.toLowerCase();
-
-            if (title.includes(searchTerm) || description.includes(searchTerm)) {
-                card.style.display = 'flex';
-            } else {
-                card.style.display = 'none';
-            }
-        });
+        const filtered = allProducts.filter(p => 
+            p.Title.toLowerCase().includes(searchTerm) || 
+            p.Category.toLowerCase().includes(searchTerm)
+        );
+        renderProducts(filtered);
     });
 });
+
+function fetchProducts() {
+    fetch(SHEET_CSV_URL)
+        .then(response => response.text())
+        .then(csvText => {
+            Papa.parse(csvText, {
+                header: true,
+                skipEmptyLines: true,
+                complete: function(results) {
+                    allProducts = results.data;
+                    renderProducts(allProducts);
+                }
+            });
+        })
+        .catch(error => {
+            document.getElementById('productsGrid').innerHTML = '<p>Error loading deals.</p>';
+            console.error('Error fetching data:', error);
+        });
+}
+
+function renderProducts(products) {
+    const grid = document.getElementById('productsGrid');
+    grid.innerHTML = ''; // Clear loading text
+
+    if (products.length === 0) {
+        grid.innerHTML = '<p style="grid-column: 1/-1;">No products found.</p>';
+        return;
+    }
+
+    products.forEach(product => {
+        const card = document.createElement('div');
+        card.className = 'product-card';
+        
+        card.innerHTML = `
+            <div class="img-wrapper">
+                <span class="platform-badge">${product.Platform || 'Deal'}</span>
+                <img src="${product.ImageURL}" alt="${product.Title}">
+            </div>
+            <div class="card-info">
+                <span class="category">${product.Category}</span>
+                <h3>${product.Title}</h3>
+                <div class="footer">
+                    <div>
+                        <span class="price">${product.Price}</span>
+                        ${product.OldPrice ? `<span class="old-price">${product.OldPrice}</span>` : ''}
+                    </div>
+                    <a href="${product.AffiliateLink}" target="_blank" rel="noopener noreferrer" class="buy-btn">Get Deal</a>
+                </div>
+            </div>
+        `;
+        grid.appendChild(card);
+    });
+}

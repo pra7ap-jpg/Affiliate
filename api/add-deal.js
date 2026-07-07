@@ -1,29 +1,37 @@
 export default async function handler(req, res) {
     if (req.method !== 'POST') return res.status(405).send('Method Not Allowed');
 
-    const { productUrl, category } = req.body;
+    let { productUrl, category } = req.body;
     
-    // Your actual keys
     const SCRAPER_API_KEY = '6455cbfb43dbb193447b5d8ae4ca31e4'; 
     const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyudKVJfTqmFZ7Pr33X6sWAvMhYuETeD7l_Gmz3z79dz8iSUzMp_-WTHNg1EPLiTgi8/exec';
-    
-    // Remember to replace this with your actual Amazon Associates tracking ID later
     const YOUR_AMAZON_AFFILIATE_TAG = 'fridaydeals-21'; 
 
-    // Extract the 10-character ASIN from the raw Amazon URL
-    const asinMatch = productUrl.match(/(?:dp|o|v|a|aw)\/([A-Z0-9]{10})/);
-    if (!asinMatch) return res.status(400).json({ error: 'Invalid Amazon URL. Make sure it contains an ASIN.' });
-    
-    const asin = asinMatch[1];
-    const targetAmazonUrl = `https://www.amazon.in/dp/${asin}`;
-
     try {
-        // 1. Fetch data from Amazon via ScraperAPI (autoparse=true forces a clean JSON response)
+        // Expand shortened links (like amzn.to or amzn.in) before checking
+        if (productUrl.includes('amzn.to') || productUrl.includes('amzn.in')) {
+            const redirectRes = await fetch(productUrl, { method: 'HEAD', redirect: 'manual' });
+            if (redirectRes.status >= 300 && redirectRes.status < 400) {
+                productUrl = redirectRes.headers.get('location') || productUrl;
+            }
+        }
+
+        // Broader regex to catch the ASIN in various Amazon URL structures
+        const asinMatch = productUrl.match(/(?:dp|gp\/product|product|asin)\/?([A-Z0-9]{10})/i);
+        
+        if (!asinMatch) {
+            return res.status(400).json({ error: 'Could not extract ASIN. Please paste the full product URL from your browser.' });
+        }
+        
+        const asin = asinMatch[1].toUpperCase();
+        const targetAmazonUrl = `https://www.amazon.in/dp/${asin}`;
+
+        // Scrape the clean URL
         const scraperUrl = `https://api.scraperapi.com/?api_key=${SCRAPER_API_KEY}&autoparse=true&url=${encodeURIComponent(targetAmazonUrl)}`;
         const scraperRes = await fetch(scraperUrl);
         const product = await scraperRes.json();
 
-        // 2. Format the payload using ScraperAPI's JSON structure
+        // Format and push to Google Sheets
         const payload = {
             title: product.name || product.title || 'Untitled Product',
             category: category || 'Deals',
@@ -34,18 +42,15 @@ export default async function handler(req, res) {
             platform: 'Amazon'
         };
 
-        // 3. Send the formatted data straight to your Google Sheet
         await fetch(APPS_SCRIPT_URL, {
             method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
+            headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(payload)
         });
 
         res.status(200).json({ success: true, message: 'Deal successfully pushed to sheet!' });
     } catch (error) {
         console.error(error);
-        res.status(500).json({ error: 'Failed to process the link. The scraper might have timed out.' });
+        res.status(500).json({ error: 'Failed to process the link. Scraper timeout or bad link.' });
     }
 }

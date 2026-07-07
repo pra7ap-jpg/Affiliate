@@ -1,5 +1,5 @@
 // PASTE YOUR PUBLISHED GOOGLE SHEET CSV LINK HERE:
-const SHEET_CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-YOUR-ID-HERE/pub?output=csv';
+const SHEET_CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSGy1ecJ96nFNxjc-PvOY4RC3HhwC8AYYTLG9MKUaTBgudoFLKgg5odzFMgMWA5-CIaNHIfXynI8kxq/pub?gid=0&single=true&output=csv';
 
 let allProducts = [];
 

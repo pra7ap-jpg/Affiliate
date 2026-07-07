@@ -5,31 +5,25 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Curated Deals</title>
     <link rel="stylesheet" href="style.css">
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;700;800&display=swap" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
 </head>
 <body>
-
     <nav class="navbar">
-        <div class="nav-container">
-            <a href="#" class="logo">Curated<span>Deals</span></a>
-            <input type="text" id="searchInput" placeholder="Search products...">
+        <div class="nav-wrapper">
+            <div class="logo">Curated<span>.</span></div>
+            <input type="text" id="searchInput" class="search-box" placeholder="Search gear...">
         </div>
     </nav>
 
     <header class="hero">
-        <h1>Handpicked Best Deals</h1>
-        <p>Dynamic data pulled straight from Google Sheets.</p>
+        <h1>Premium Gear. <br><span class="highlight">Unbeatable Prices.</span></h1>
     </header>
 
-    <main class="main-container">
-        <section class="products-grid" id="productsGrid">
-            <p style="text-align:center; grid-column: 1/-1;">Loading deals...</p>
-        </section>
+    <main class="grid-container" id="productsGrid">
+        <div class="loading">Fetching the latest deals...</div>
     </main>
 
     <script src="script.js"></script>
 </body>
 </html>
-</html>
-

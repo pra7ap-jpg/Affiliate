@@ -2,82 +2,89 @@ let allProducts = [];
 let activeCategory = 'All';
 let currentSearchTerm = '';
 
+// --- HAMBURGER MENU & DRAWER LOGIC ---
+const menuToggle = document.getElementById('menuToggle');
+const drawer = document.getElementById('drawer');
+const overlay = document.getElementById('overlay');
+
+function toggleDrawer() {
+    menuToggle.classList.toggle('active');
+    drawer.classList.toggle('open');
+    overlay.classList.toggle('active');
+}
+
+menuToggle.addEventListener('click', toggleDrawer);
+overlay.addEventListener('click', toggleDrawer);
+
 // --- DYNAMIC CONTENT LIBRARY ---
 const pages = {
     home: `
-        <header class="hero">
-            <h1>Premium Gear. <br><span class="highlight">Unbeatable Prices.</span></h1>
-        </header>
-
-        <section class="info-section">
-            <div class="info-box">
-                <h3>⚡ Live Updates</h3>
-                <p>Prices and stock status are tracked and updated dynamically.</p>
-            </div>
-            <div class="info-box highlight-box">
-                <h3>🤝 Affiliate Disclosure</h3>
-                <p>We earn a small commission from retailers if you buy through our links, at zero extra cost to you.</p>
-            </div>
-            <div class="info-box">
-                <h3>🛡️ Verified Deals</h3>
-                <p>We filter out fake discounts so you only see genuine price drops.</p>
+        <!-- Trust & Security Hero -->
+        <section class="trust-banner">
+            <h1>Curated. Verified. Unbeatable.</h1>
+            <div class="trust-grid">
+                <div class="trust-card">
+                    <h3>🛡️ Strict Verification</h3>
+                    <p>Every deal is analyzed against historical pricing data to ensure the discount is genuine.</p>
+                </div>
+                <div class="trust-card highlight">
+                    <h3>⚡ Direct to Retailer</h3>
+                    <p>No middlemen. Clicking a deal takes you straight to the official Amazon or Flipkart product page.</p>
+                </div>
+                <div class="trust-card">
+                    <h3>🎯 Quality Filtered</h3>
+                    <p>We bypass the junk and only curate products with high consumer utility and brand reputation.</p>
+                </div>
             </div>
         </section>
 
-        <div id="categoryFilters" class="filter-container"></div>
+        <!-- Product Grid -->
         <main class="grid-container" id="productsGrid">
-            <div class="loading" style="grid-column: 1/-1; text-align: center; font-weight: 800; padding: 40px; font-size: 1.1rem;">Fetching the latest deals...</div>
+            <div style="grid-column: 1/-1; text-align: center; font-weight: 800; padding: 60px; font-size: 1.2rem;">
+                Hunting the latest deals...
+            </div>
         </main>
+
+        <!-- Detailed Disclosure -->
+        <section class="full-disclosure">
+            <h2>Our Affiliate Model & Transparency</h2>
+            <p><strong>How we keep this free:</strong> FridayDeals.online is a reader-supported deal curation engine. When you click on links to various merchants on this site and make a purchase, this can result in this site earning a referral commission.</p>
+            <p><strong>Does this cost you extra?</strong> Absolutely not. The commission is paid entirely by the retailer (like Amazon or Flipkart) out of their profit margin. The price you pay at checkout is exactly the same whether you use our tracking link or find the item independently.</p>
+            <p>We are independently owned and the opinions expressed here are our own. We never allow brands to pay for artificial "deal" placement.</p>
+        </section>
     `,
     about: `
         <main class="page-container">
-            <h1>About FridayDeals.online</h1>
-            <p>Welcome to FridayDeals.online. We are a dedicated curation platform built for consumers who value performance, quality, and rigorous deal verification.</p>
+            <h1>About FridayDeals</h1>
+            <p>We are a dedicated curation platform built for consumers who value performance, quality, and rigorous deal verification.</p>
             <h2>Our Mission</h2>
-            <p>The modern e-commerce landscape is flooded with inflated retail prices, counterfeit discounts, and overwhelming choice paralysis. Our core mission is to cut through the noise. We leverage analytical market tracking to identify genuine price drops and high-quality products across leading retail networks like Amazon and Flipkart.</p>
-            <h2>How We Operate</h2>
-            <p>We do not blindly aggregate data. Every product featured on this platform is selected based on a strict criteria of historical pricing data, brand reputation, and consumer utility. If a deal does not represent true market value, it does not make it to our grid.</p>
-            <h2>The Affiliate Model (Full Transparency)</h2>
-            <p>Running a high-performance aggregation platform requires resources. To sustain our operations and keep this service entirely free for you, we utilize an affiliate marketing model.</p>
-            <p><strong>What this means:</strong> When you click on a product link on FridayDeals.online and make a purchase, the retailer pays us a small percentage of the sale as a referral fee. <strong>This commission is paid out of the retailer's margin. It does not increase the price you pay by a single cent.</strong></p>
+            <p>The modern e-commerce landscape is flooded with inflated retail prices, counterfeit discounts, and overwhelming choice paralysis. Our core mission is to cut through the noise. We leverage analytical market tracking to identify genuine price drops.</p>
         </main>
     `,
     privacy: `
         <main class="page-container">
             <h1>Privacy Policy</h1>
-            <p><em>Last Updated: July 2026</em></p>
-            <p>At FridayDeals.online, we are committed to safeguarding your privacy. This comprehensive policy outlines how we handle data when you utilize our platform.</p>
-            <h2>1. Data Collection and Usage</h2>
-            <p>We believe in minimal data collection. We do not require account creation, and we do not collect personally identifiable information (PII) such as names, addresses, or payment details, as we do not process transactions directly.</p>
-            <h2>2. Cookies and Tracking Technologies</h2>
-            <p>We use cookies to enhance user experience and facilitate our affiliate tracking. When you click an outbound link to a retailer, an affiliate cookie is placed on your browser. This cookie informs the retailer that FridayDeals referred you.</p>
-            <h2>3. Third-Party Links</h2>
-            <p>Our primary function is directing you to external e-commerce sites. Once you leave FridayDeals.online, our Privacy Policy no longer applies.</p>
+            <p>At FridayDeals.online, we believe in minimal data collection. We do not require account creation, and we do not collect personally identifiable information (PII).</p>
+            <h2>Cookies and Tracking Technologies</h2>
+            <p>We use cookies solely to facilitate our affiliate tracking. When you click an outbound link, an affiliate cookie is placed on your browser to inform the retailer that FridayDeals referred you.</p>
         </main>
     `,
     terms: `
         <main class="page-container">
             <h1>Terms & Conditions</h1>
-            <p><em>Effective Date: July 2026</em></p>
-            <h2>1. Platform Function and Scope</h2>
-            <p>FridayDeals.online operates exclusively as a curation and referral platform. We are not a retailer, distributor, or manufacturer. We do not hold inventory, process payments, or manage order fulfillment.</p>
-            <h2>2. Accuracy of Information and Pricing</h2>
-            <p>We continuously monitor and update our data feeds. However, e-commerce pricing is highly volatile. <strong>The final price you pay is the price displayed on the retailer's checkout page.</strong></p>
-            <h2>3. Affiliate Disclosure</h2>
-            <p>In compliance with standard guidelines, we declare that links pointing to external retailers are affiliate links.</p>
+            <h2>Platform Function</h2>
+            <p>FridayDeals.online operates exclusively as a curation and referral platform. We do not hold inventory, process payments, or manage order fulfillment.</p>
+            <h2>Pricing Volatility</h2>
+            <p>We continuously monitor our data feeds, but e-commerce pricing is highly volatile. <strong>The final price you pay is the price displayed on the retailer's checkout page.</strong></p>
         </main>
     `,
     contact: `
         <main class="page-container">
             <h1>Contact Us</h1>
-            <p>We value clear and efficient communication. Whether you are a user with feedback or a brand looking to establish a performance partnership, here is how you can reach us.</p>
-            <h2>Partnerships & Advertising</h2>
             <p>Email: <strong>partnerships@fridaydeals.online</strong></p>
-            <h2>General Inquiries & Bug Reports</h2>
-            <p>Email: <strong>support@fridaydeals.online</strong></p>
-            <hr style="border: 1px solid #111; margin: 40px 0;">
-            <h2>⚠️ Important Customer Service Notice</h2>
-            <p>Please note that FridayDeals.online is a deal discovery engine. <strong>We do not sell products directly.</strong> If you have an issue regarding order tracking, refunds, or returns, you must contact the retailer where the transaction took place.</p>
+            <hr style="border: 2px solid #111; margin: 40px 0;">
+            <h2>⚠️ Important Notice</h2>
+            <p><strong>We do not sell products directly.</strong> If you have an issue regarding order tracking, refunds, or returns, you must contact Amazon or Flipkart directly.</p>
         </main>
     `
 };
@@ -98,8 +105,14 @@ function handleRouting() {
     appRoot.innerHTML = pages[hash];
     window.scrollTo(0, 0);
 
+    // If leaving Home, close the drawer automatically
+    if (drawer.classList.contains('open')) {
+        toggleDrawer();
+    }
+
     if (hash === 'home') {
         searchInput.style.display = 'block';
+        menuToggle.style.display = 'flex'; // Show Hamburger
         
         if (allProducts.length === 0) {
             fetchDeals();
@@ -110,6 +123,7 @@ function handleRouting() {
         searchInput.addEventListener('input', handleSearch);
     } else {
         searchInput.style.display = 'none';
+        menuToggle.style.display = 'none'; // Hide Hamburger on text pages
         searchInput.removeEventListener('input', handleSearch);
     }
 }
@@ -126,7 +140,6 @@ function fetchDeals() {
                 skipEmptyLines: true,
                 complete: function(results) {
                     allProducts = results.data.reverse(); 
-                    
                     if (window.location.hash === '' || window.location.hash === '#home') {
                         renderFilters();
                         applyFilters();
@@ -135,9 +148,8 @@ function fetchDeals() {
             });
         })
         .catch(err => {
-            console.error("Error fetching deals:", err);
             const grid = document.getElementById('productsGrid');
-            if(grid) grid.innerHTML = '<div style="color: #111; grid-column: 1/-1; text-align: center; padding: 40px; font-weight: 800;">Failed to load deals.</div>';
+            if(grid) grid.innerHTML = '<div style="grid-column: 1/-1; text-align: center; padding: 40px; font-weight: 800;">Failed to load deals. Check your connection.</div>';
         });
 }
 
@@ -147,6 +159,7 @@ function renderFilters() {
 
     const categories = ['All', ...new Set(allProducts.map(p => p.Category || p.category).filter(Boolean))];
     
+    // Inject filters into the side drawer instead of the main page
     filterContainer.innerHTML = categories.map(cat => 
         `<button class="filter-btn ${activeCategory === cat ? 'active' : ''}" onclick="setCategory('${cat}')">${cat}</button>`
     ).join('');
@@ -154,8 +167,9 @@ function renderFilters() {
 
 function setCategory(category) {
     activeCategory = category;
-    renderFilters();
+    renderFilters(); // Re-render to update active class
     applyFilters();
+    toggleDrawer(); // Auto-close drawer when category is selected
 }
 
 function handleSearch(e) {
@@ -185,7 +199,7 @@ function renderProducts(products) {
     if (!grid) return;
 
     if (products.length === 0) {
-        grid.innerHTML = '<div style="color: #111; grid-column: 1 / -1; text-align: center; padding: 40px 0; font-weight: 800;">No deals found matching your search.</div>';
+        grid.innerHTML = '<div style="grid-column: 1 / -1; text-align: center; padding: 40px 0; font-weight: 800;">No deals found matching your search.</div>';
         return;
     }
 
@@ -196,18 +210,17 @@ function renderProducts(products) {
         const img = product.ImageURL || product.image || '';
         const link = product.AffiliateLink || product.link || '#';
 
+        // The entire card is wrapped in an anchor tag <a> so clicking anywhere takes them to Amazon/Flipkart
         return `
-            <div class="product-card">
+            <a href="${link}" target="_blank" rel="noopener noreferrer" class="product-card">
                 <img src="${img}" alt="${title}" loading="lazy">
-                <div class="product-info">
-                    <h3>${title}</h3>
-                    <div class="price-row">
-                        <span class="price">${price}</span>
-                        <span class="old-price">${oldPrice}</span>
-                    </div>
-                    <a href="${link}" target="_blank" class="buy-btn">Grab Deal</a>
+                <h3>${title}</h3>
+                <div class="price-row">
+                    <span class="price">${price}</span>
+                    <span class="old-price">${oldPrice}</span>
                 </div>
-            </div>
+                <div class="buy-btn-visual">Grab Deal</div>
+            </a>
         `;
     }).join('');
 }

@@ -1,24 +1,7 @@
-// PASTE YOUR PUBLISHED GOOGLE SHEET CSV LINK HERE:
-const SHEET_CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSGy1ecJ96nFNxjc-PvOY4RC3HhwC8AYYTLG9MKUaTBgudoFLKgg5odzFMgMWA5-CIaNHIfXynI8kxq/pub?gid=0&single=true&output=csv';
-
 let allProducts = [];
 
 document.addEventListener('DOMContentLoaded', () => {
-    fetchProducts();
-
-    // Setup Search
-    document.getElementById('searchInput').addEventListener('input', (e) => {
-        const searchTerm = e.target.value.toLowerCase();
-        const filtered = allProducts.filter(p => 
-            p.Title.toLowerCase().includes(searchTerm) || 
-            p.Category.toLowerCase().includes(searchTerm)
-        );
-        renderProducts(filtered);
-    });
-});
-
-function fetchProducts() {
-    fetch(SHEET_CSV_URL)
+    fetch('/api/deals')
         .then(response => response.text())
         .then(csvText => {
             Papa.parse(csvText, {
@@ -30,39 +13,43 @@ function fetchProducts() {
                 }
             });
         })
-        .catch(error => {
-            document.getElementById('productsGrid').innerHTML = '<p>Error loading deals.</p>';
-            console.error('Error fetching data:', error);
+        .catch(err => {
+            document.getElementById('productsGrid').innerHTML = '<div class="loading">Failed to load deals.</div>';
         });
-}
+
+    document.getElementById('searchInput').addEventListener('input', (e) => {
+        const term = e.target.value.toLowerCase();
+        const filtered = allProducts.filter(p => {
+            const title = p.Title ? p.Title.toLowerCase() : '';
+            const category = p.Category ? p.Category.toLowerCase() : '';
+            return title.includes(term) || category.includes(term);
+        });
+        renderProducts(filtered);
+    });
+});
 
 function renderProducts(products) {
     const grid = document.getElementById('productsGrid');
-    grid.innerHTML = ''; // Clear loading text
+    grid.innerHTML = '';
 
     if (products.length === 0) {
-        grid.innerHTML = '<p style="grid-column: 1/-1;">No products found.</p>';
+        grid.innerHTML = '<div class="loading">No products found.</div>';
         return;
     }
 
     products.forEach(product => {
         const card = document.createElement('div');
-        card.className = 'product-card';
-        
+        card.className = 'card';
         card.innerHTML = `
-            <div class="img-wrapper">
-                <span class="platform-badge">${product.Platform || 'Deal'}</span>
-                <img src="${product.ImageURL}" alt="${product.Title}">
+            <div class="card-img">
+                <img src="${product.ImageURL || ''}" alt="${product.Title || 'Product Image'}">
             </div>
-            <div class="card-info">
-                <span class="category">${product.Category}</span>
-                <h3>${product.Title}</h3>
-                <div class="footer">
-                    <div>
-                        <span class="price">${product.Price}</span>
-                        ${product.OldPrice ? `<span class="old-price">${product.OldPrice}</span>` : ''}
-                    </div>
-                    <a href="${product.AffiliateLink}" target="_blank" rel="noopener noreferrer" class="buy-btn">Get Deal</a>
+            <div class="card-content">
+                <div class="card-category">${product.Platform || 'Deal'}</div>
+                <h3 class="card-title">${product.Title || 'Untitled Product'}</h3>
+                <div class="card-footer">
+                    <div class="price-tag">${product.Price || ''}</div>
+                    <a href="${product.AffiliateLink || '#'}" target="_blank" class="btn">Grab Deal</a>
                 </div>
             </div>
         `;

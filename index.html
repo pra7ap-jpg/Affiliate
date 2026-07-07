@@ -3,51 +3,30 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>FridayDeals.online | Premium Gear & Discounts</title>
+    <title>Curated Deals</title>
+    <!-- Premium Font -->
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;700;800&display=swap" rel="stylesheet">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
 </head>
 <body>
-    <div class="disclosure-bar">
-        <strong>Transparency Note:</strong> FridayDeals is reader-supported. When you buy through our links, we may earn an affiliate commission at zero cost to you.
-    </div>
-
-    <nav class="navbar">
-        <div class="nav-wrapper">
-            <a href="#home" class="logo">Friday<span>Deals</span></a>
-            <input type="text" id="searchInput" class="search-box" placeholder="Search for gear...">
+    <!-- Ambient glow behind the glass -->
+    <div class="ambient-bg"></div>
+    
+    <header class="glass-header">
+        <h1>Premium Deals</h1>
+        <div id="filterContainer" class="filter-scroll">
+            <!-- Filters will be injected here by script.js -->
         </div>
-    </nav>
+    </header>
 
-    <div id="app-root">
+    <main class="container">
+        <div id="productsGrid" class="bento-grid">
+            <!-- Product cards will be injected here by script.js -->
         </div>
+    </main>
 
-    <footer class="site-footer">
-        <div class="footer-wrapper">
-            <div class="footer-brand">
-                <a href="#home" class="logo">Friday<span>Deals</span>.online</a>
-                <p>We track, verify, and curate the best performance gear and tech on the internet so you don't have to.</p>
-            </div>
-            <div class="footer-links">
-                <div class="link-column">
-                    <h4>Company</h4>
-                    <a href="#about">About Us</a>
-                    <a href="#contact">Contact</a>
-                </div>
-                <div class="link-column">
-                    <h4>Legal</h4>
-                    <a href="#privacy">Privacy Policy</a>
-                    <a href="#terms">Terms & Conditions</a>
-                </div>
-            </div>
-        </div>
-        <div class="footer-bottom">
-            <p>&copy; 2026 FridayDeals.online. All Rights Reserved.</p>
-            <p class="small-text">Amazon and the Amazon logo are trademarks of Amazon.com, Inc. or its affiliates.</p>
-        </div>
-    </footer>
-
+    <!-- CSV Parser & Your Script -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.2/papaparse.min.js"></script>
     <script src="script.js"></script>
 </body>
 </html>

@@ -3,30 +3,57 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>FridayDeals</title>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap" rel="stylesheet">
+    <title>FridayDeals | Verified Price Drops</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <div class="ambient-bg"></div>
-    
-    <nav class="glass-navbar">
+
+    <!-- Header Navigation -->
+    <nav class="brutal-nav">
         <div class="nav-content">
-            <a href="#home" class="logo">FridayDeals</a>
+            <a href="#home" class="logo">FridayDeals.</a>
             
             <input type="text" id="searchInput" placeholder="Search deals..." class="search-bar">
             
-            <div class="nav-links">
-                <a href="#about">About</a>
-                <a href="#privacy">Privacy</a>
-                <a href="#terms">Terms</a>
-                <a href="#contact">Contact</a>
-            </div>
+            <!-- Animated Hamburger Menu -->
+            <button class="hamburger" id="menuToggle" aria-label="Toggle Categories">
+                <span class="bar"></span>
+                <span class="bar"></span>
+                <span class="bar"></span>
+            </button>
         </div>
     </nav>
 
+    <!-- Slide-out Category Drawer -->
+    <aside class="category-drawer" id="drawer">
+        <div class="drawer-header">
+            <h2>Categories</h2>
+        </div>
+        <div id="categoryFilters" class="drawer-filters">
+            <!-- Categories injected here by JS -->
+        </div>
+    </aside>
+    <!-- Overlay for closing the drawer -->
+    <div class="drawer-overlay" id="overlay"></div>
+
+    <!-- Main Content Area (SPA Router Injects Here) -->
     <div id="app-root"></div>
 
+    <!-- Brutalist Footer -->
+    <footer class="brutal-footer">
+        <div class="footer-links">
+            <a href="#about">About</a>
+            <a href="#privacy">Privacy Policy</a>
+            <a href="#terms">Terms & Conditions</a>
+            <a href="#contact">Contact</a>
+        </div>
+        <div class="copyright">
+            &copy; 2026 FridayDeals.online. All rights reserved.
+        </div>
+    </footer>
+
+    <!-- Scripts -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.2/papaparse.min.js"></script>
     <script src="script.js"></script>
 </body>

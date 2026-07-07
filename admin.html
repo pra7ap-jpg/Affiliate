@@ -91,7 +91,9 @@
                         price: product.pricing || product.price || '',
                         oldPrice: product.list_price || product.rrp || '',
                         image: (product.images && product.images[0]) ? product.images[0] : '',
-                        link: url.includes('?') ? `${url}&tag=fridaydeals-21` : `${url}?tag=fridaydeals-21`,
+                        link: (url.includes('amzn.to') || url.includes('amzn.in') || url.includes('tag=')) 
+      ? url 
+      : (url.includes('?') ? `${url}&tag=affindi-21` : `${url}?tag=affindi-21`),
                         platform: 'Amazon'
                     };
 

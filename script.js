@@ -50,37 +50,95 @@ const pages = {
             <p>We maintain independent operational control. Sponsored artificial deal placement is strictly prohibited.</p>
         </section>
     `,
+    
     about: `
         <main class="page-container">
             <h1>About FridayDeals</h1>
-            <p>We are a dedicated curation platform built for consumers who value performance, quality, and rigorous deal verification.</p>
-            <h2>Mission Statement</h2>
-            <p>The modern e-commerce landscape is flooded with inflated retail prices, counterfeit discounts, and overwhelming choice paralysis. Our core mission is to cut through the noise. We leverage analytical market tracking to identify genuine price drops.</p>
+            <p>Welcome to FridayDeals.online. We are a performance-driven curation platform engineered for consumers who demand quality, value, and total transparency in their online shopping.</p>
+            
+            <h2>The Problem We Are Solving</h2>
+            <p>The modern e-commerce landscape is broken. It is flooded with artificially inflated retail prices, countdown timers designed to cause panic, and counterfeit "discounts" where a price is raised one day only to be "slashed" the next. Consumers are experiencing intense choice paralysis and discount fatigue.</p>
+            
+            <h2>Our Data-Driven Solution</h2>
+            <p>Our core mission is to cut through the algorithmic noise. We leverage analytical market tracking to identify genuine price drops across leading retail networks like Amazon and Flipkart. We do not blindly scrape and dump data.</p>
+            <p>Every product featured on our grid is subjected to strict criteria:</p>
+            <ul style="margin-left: 20px; margin-bottom: 20px; color: var(--text-muted); font-weight: 500;">
+                <li style="margin-bottom: 8px;"><strong>Historical Pricing Validation:</strong> Is this actually the lowest price in the last 90 days?</li>
+                <li style="margin-bottom: 8px;"><strong>Brand Reputation:</strong> Does this product have a legitimate track record of reliability?</li>
+                <li style="margin-bottom: 8px;"><strong>Consumer Utility:</strong> Is this an item our users actually need or want?</li>
+            </ul>
+            <p>If a deal does not represent true market value, it does not make it to our platform. Period.</p>
+
+            <h2>How We Sustain Operations</h2>
+            <p>Building and maintaining a high-speed aggregation tool requires resources. To keep this service entirely free and free of obtrusive display ads, we operate on an affiliate marketing model. When you click a deal and make a purchase, the retailer pays us a small performance commission out of their own margin. It costs you absolutely nothing extra.</p>
         </main>
     `,
+    
     privacy: `
         <main class="page-container">
             <h1>Privacy Policy</h1>
-            <p>At FridayDeals, we operate on minimal data collection. We do not mandate account creation, nor do we harvest personally identifiable information (PII).</p>
-            <h2>Tracking Protocols</h2>
-            <p>We utilize cookies strictly to facilitate affiliate routing. Upon clicking an outbound link, an affiliate token is lodged in your browser to inform the retailer of the referral origin.</p>
+            <p><em>Effective Date: July 2026</em></p>
+            <p>At FridayDeals.online, we believe your data is yours. We have engineered our platform to function on a principle of absolute minimal data collection. This document outlines exactly what information we handle, how we use it, and how we protect it.</p>
+            
+            <h2>1. Information We Do Not Collect</h2>
+            <p>We are a discovery engine, not a retailer. Therefore, we deliberately design our systems to avoid collecting sensitive data:</p>
+            <ul style="margin-left: 20px; margin-bottom: 20px; color: var(--text-muted); font-weight: 500;">
+                <li style="margin-bottom: 8px;">We do not require account registration or logins.</li>
+                <li style="margin-bottom: 8px;">We do not collect Personally Identifiable Information (PII) such as your name, home address, or phone number.</li>
+                <li style="margin-bottom: 8px;">We do not ask for, process, or store credit card numbers or financial data under any circumstances.</li>
+            </ul>
+
+            <h2>2. Cookies & Affiliate Tracking Technologies</h2>
+            <p>To sustain our operations, we utilize performance marketing tracking links. When you click an outbound link to a merchant (e.g., Amazon, Flipkart), a temporary affiliate cookie is placed on your browser. This cookie contains a unique, anonymous identifier that simply tells the retailer that FridayDeals.online referred you. This allows us to earn a commission if you make a purchase.</p>
+
+            <h2>3. Third-Party Websites and Analytics</h2>
+            <p>Our platform contains links to external retail sites. Once you click a deal and leave FridayDeals.online, you are subject to the privacy policies and terms of that specific retailer. We recommend reviewing the privacy protocols of any site you visit.</p>
+            <p>We may also use standard analytics tools (like Google Analytics) to understand general traffic patterns, such as which geographic regions our users are from and which types of deals are most popular. This data is aggregated and anonymized.</p>
+
+            <h2>4. Policy Updates</h2>
+            <p>We may update this policy periodically to reflect changes in legal requirements or operational practices. Any updates will be posted directly to this page.</p>
         </main>
     `,
+    
     terms: `
         <main class="page-container">
             <h1>Terms & Conditions</h1>
-            <h2>Platform Architecture</h2>
-            <p>FridayDeals operates exclusively as a curation node. We hold zero physical inventory, process zero payments, and manage zero fulfillment logistics.</p>
-            <h2>Pricing Volatility</h2>
-            <p>Data feeds are continuously synchronized, however, retail pricing is volatile. <strong>The final executable price is determined exclusively by the retailer at checkout.</strong></p>
+            <p><em>Effective Date: July 2026</em></p>
+            <p>By accessing or utilizing FridayDeals.online, you agree to be bound by the following terms of service. Please read them carefully.</p>
+
+            <h2>1. Nature of the Platform</h2>
+            <p>FridayDeals.online is an informational curation and deal discovery platform. We act strictly as an intermediary connecting consumers with third-party retailers. <strong>We do not manufacture, stock, sell, or distribute any physical or digital products.</strong></p>
+
+            <h2>2. Disclaimer of Pricing and Availability</h2>
+            <p>E-commerce pricing is controlled by algorithms and is inherently volatile. While we strive to ensure our data feeds are accurate and up-to-date at the time of publishing, we cannot guarantee that a deal will remain active or that a price will not change.</p>
+            <p><strong>The final, legally binding price of any item is the price displayed on the third-party retailer's final checkout page.</strong> FridayDeals.online cannot be held responsible for pricing discrepancies, out-of-stock items, or expired promotional codes.</p>
+
+            <h2>3. Limitation of Liability regarding Transactions</h2>
+            <p>Because we do not process transactions, we assume zero liability for the fulfillment of orders. Any dispute regarding shipping delays, damaged goods, returns, refunds, or customer service must be handled directly with the retailer where the transaction occurred (e.g., Amazon, Flipkart). We cannot intervene on your behalf.</p>
+
+            <h2>4. Intellectual Property</h2>
+            <p>The layout, design, copy, and curation methodology of FridayDeals.online are the property of our platform. Product images, brand names, and trademarks displayed on our site are the property of their respective owners and are used strictly for identification purposes under fair use.</p>
         </main>
     `,
+    
     contact: `
         <main class="page-container">
             <h1>Contact Us</h1>
-            <p>Email: <strong>partnerships@fridaydeals.online</strong></p>
-            <h2>⚠️ Support Notice</h2>
-            <p><strong>We do not process transactions.</strong> Logistics, tracking, or refund inquiries must be directed to the corresponding retailer (Amazon/Flipkart).</p>
+            <p>Whether you are a user with feedback or a brand looking to establish a performance partnership, we value clear, efficient communication. Please direct your inquiries to the appropriate channel below.</p>
+            
+            <h2>Partnerships & Advertising</h2>
+            <p>For brands, agencies, and retail networks looking to feature products or establish a direct affiliate relationship with our platform.</p>
+            <p><strong>Email:</strong> partnerships@fridaydeals.online</p>
+            
+            <h2>Technical Support & Bug Reports</h2>
+            <p>If you encounter a broken link, a visual glitch, or have general feedback regarding the website's performance.</p>
+            <p><strong>Email:</strong> support@fridaydeals.online</p>
+            
+            <hr style="border: 0; border-top: 1px solid var(--border-light); margin: 40px 0;">
+            
+            <h2 style="color: #ef4444;">⚠️ Critical Customer Service Notice</h2>
+            <p><strong>FridayDeals.online is a discovery engine. We do not process orders or sell products directly.</strong></p>
+            <p>If you have a problem with an item you purchased (e.g., it hasn't arrived, it is defective, or you need a refund), you <strong>must</strong> contact the customer service department of the retailer you bought it from (such as Amazon or Flipkart). We do not have access to your order history and cannot assist with shipping or return logistics.</p>
         </main>
     `
 };

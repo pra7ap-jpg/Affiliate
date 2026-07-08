@@ -262,9 +262,28 @@ function renderProducts(products) {
         const img = product.ImageURL || product.image || '';
         const link = product.AffiliateLink || product.link || '#';
 
+        // --- STORE DETECTION ENGINE ---
+        let store = 'Verified Deal';
+        let storeClass = 'other';
+        const urlString = link.toLowerCase();
+        
+        if (urlString.includes('amazon.in') || urlString.includes('amzn.to')) {
+            store = 'Amazon'; 
+            storeClass = 'amazon';
+        } else if (urlString.includes('flipkart.com') || urlString.includes('fkrt.it')) {
+            store = 'Flipkart'; 
+            storeClass = 'flipkart';
+        } else if (urlString.includes('myntra.com')) {
+            store = 'Myntra'; 
+            storeClass = 'myntra';
+        }
+
         return `
             <a href="${link}" target="_blank" rel="noopener noreferrer" class="product-card">
                 <img src="${img}" alt="${title}" loading="lazy">
+                
+                <span class="store-badge ${storeClass}">${store}</span>
+                
                 <h3>${title}</h3>
                 <div class="price-row">
                     <span class="price">${price}</span>

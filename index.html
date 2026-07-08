@@ -7,6 +7,7 @@
     <meta name="description" content="Stop hunting for fake discounts. FridayDeals tracks historical pricing trends across Amazon and Flipkart to deliver genuine, data-verified price drops daily.">
     <meta name="robots" content="index, follow">
 
+    <!-- Open Graph Meta Tags -->
     <meta property="og:type" content="website">
     <meta property="og:url" content="https://fridaydeals.online/">
     <meta property="og:title" content="FridayDeals | Verified Price Drops">
@@ -20,9 +21,17 @@
 
     <nav class="smooth-nav">
         <div class="nav-content">
-            <a href="#home" class="logo">
-                <div class="logo-glow"></div>
-                FridayDeals
+            <!-- Logo with dynamic background glow and animated cart -->
+            <a href="#home" class="logo-wrapper">
+                <span class="logo">
+                    <div class="logo-glow"></div>
+                    FridayDeals
+                </span>
+                <svg class="animated-cart" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="9" cy="21" r="1"></circle>
+                    <circle cx="20" cy="21" r="1"></circle>
+                    <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
+                </svg>
             </a>
             
             <input type="text" id="searchInput" placeholder="Search curated deals..." class="search-bar">
@@ -41,6 +50,7 @@
     </aside>
     <div class="drawer-overlay" id="overlay"></div>
 
+    <!-- Main Content Area -->
     <div id="app-root"></div>
 
     <footer class="smooth-footer">

@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-     <meta name="robots" content="noindex, nofollow">
-    <title> Admin | Auto-Scrape & Push</title>
+    <title>Admin | Auto-Scrape & Push (Debug Mode)</title>
+    <meta name="robots" content="noindex, nofollow">
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@600;800&display=swap" rel="stylesheet">
     <style>
         body { font-family: 'Plus Jakarta Sans', sans-serif; background: #0f172a; color: #fff; padding: 20px; display: flex; justify-content: center; }
@@ -16,7 +16,7 @@
         button { width: 100%; padding: 16px; margin-top: 30px; background: #3b82f6; color: #fff; border: none; border-radius: 12px; font-weight: 800; font-size: 1.1rem; cursor: pointer; transition: 0.2s; }
         button:hover { background: #2563eb; }
         button:disabled { background: #475569; cursor: not-allowed; }
-        #statusMsg { display: none; margin-top: 20px; text-align: center; font-weight: 600; padding: 10px; border-radius: 8px; }
+        #statusMsg { display: none; margin-top: 20px; text-align: center; font-weight: 600; padding: 15px; border-radius: 8px; word-wrap: break-word; line-height: 1.5; }
         .success { background: rgba(74, 222, 128, 0.1); color: #4ade80; border: 1px solid #4ade80; }
         .error { background: rgba(239, 68, 68, 0.1); color: #ef4444; border: 1px solid #ef4444; }
     </style>
@@ -52,7 +52,6 @@
     </div>
 
     <script>
-        // Your exact API keys and Webhook
         const SCRAPER_API_KEY = '6455cbfb43dbb193447b5d8ae4ca31e4';
         const GOOGLE_WEBHOOK = 'https://script.google.com/macros/s/AKfycbyudKVJfTqmFZ7Pr33X6sWAvMhYuETeD7l_Gmz3z79dz8iSUzMp_-WTHNg1EPLiTgi8/exec';
 
@@ -68,32 +67,41 @@
             }
 
             btn.disabled = true;
-            btn.innerText = 'Scraping Data via API...';
+            btn.innerText = 'Scraping Data... Please Wait (Up to 30s)';
             status.style.display = 'none';
 
             try {
-                // 1. Fetch raw HTML using ScraperAPI to bypass bot blocks
-                const scrapeUrl = `https://api.scraperapi.com/?api_key=${SCRAPER_API_KEY}&url=${encodeURIComponent(link)}`;
+                // 1. Fetch raw HTML using ScraperAPI
+                // Added render=true to force javascript execution in case Amazon is hiding the DOM
+                const scrapeUrl = `https://api.scraperapi.com/?api_key=${SCRAPER_API_KEY}&url=${encodeURIComponent(link)}&render=true`;
+                
                 const response = await fetch(scrapeUrl);
                 
-                if (!response.ok) throw new Error('ScraperAPI request failed.');
+                if (!response.ok) {
+                    throw new Error(`ScraperAPI HTTP Error: ${response.status}`);
+                }
+                
                 const htmlText = await response.text();
 
                 // 2. Parse the HTML to extract data
                 const parser = new DOMParser();
                 const doc = parser.parseFromString(htmlText, 'text/html');
 
-                // Advanced selectors for Amazon & Flipkart
-                const titleEl = doc.querySelector('#productTitle, .VU-ZEz, .B_NuCI, meta[property="og:title"]');
-                const priceEl = doc.querySelector('.a-price-whole, .Nx9bqj, ._30jeq3');
-                const imgEl = doc.querySelector('#landingImage, img.v2bfXq, img._396cs4, meta[property="og:image"]');
+                // Expanded selectors for Amazon Mobile & Desktop
+                const titleEl = doc.querySelector('#productTitle, #title, meta[property="og:title"], meta[name="title"], .VU-ZEz, .B_NuCI');
+                const priceEl = doc.querySelector('.a-price-whole, #priceblock_ourprice, .Nx9bqj, ._30jeq3, span.a-color-price');
+                const imgEl = doc.querySelector('#landingImage, #imgBlkFront, meta[property="og:image"], img.v2bfXq, img._396cs4');
 
-                const title = titleEl ? (titleEl.content || titleEl.innerText).trim() : 'Unknown Product Title';
-                let price = priceEl ? priceEl.innerText.replace(/[^0-9,]/g, '') : '';
-                if (price) price = '₹' + price; // Format price
-                const image = imgEl ? (imgEl.src || imgEl.content) : '';
+                const title = titleEl ? (titleEl.content || titleEl.innerText).trim() : null;
+                let price = priceEl ? priceEl.innerText.replace(/[^0-9,]/g, '') : null;
+                const image = imgEl ? (imgEl.src || imgEl.content) : null;
 
-                if (!title || !image) throw new Error('Could not extract product details from this page.');
+                if (!title || !image) {
+                    throw new Error('Missing Data. Title found: ' + (title ? 'Yes' : 'No') + ' | Image found: ' + (image ? 'Yes' : 'No') + '. Amazon might be serving a CAPTCHA.');
+                }
+                
+                if (price) price = '₹' + price;
+                else price = 'Check Site'; // Fallback if price is hidden
 
                 // 3. Push extracted data to your Google Sheet
                 btn.innerText = 'Pushing to Database...';
@@ -102,21 +110,25 @@
                 formData.append('Title', title);
                 formData.append('ImageURL', image);
                 formData.append('Price', price);
-                formData.append('OldPrice', ''); // Automatically left blank, can be adjusted manually in sheet if needed
+                formData.append('OldPrice', ''); 
                 formData.append('AffiliateLink', link);
                 formData.append('Category', category);
 
-                await fetch(GOOGLE_WEBHOOK, {
+                const googleResponse = await fetch(GOOGLE_WEBHOOK, {
                     method: 'POST',
                     body: formData
                 });
 
-                showStatus('success', 'Deal Scraped & Pushed Successfully!');
-                document.getElementById('affLink').value = ''; // Clear input for next deal
+                if (!googleResponse.ok) {
+                    throw new Error(`Google Webhook Error: ${googleResponse.status}`);
+                }
+
+                showStatus('success', '✅ Deal Scraped & Pushed Successfully!');
+                document.getElementById('affLink').value = ''; 
 
             } catch (error) {
-                console.error(error);
-                showStatus('error', 'Failed to scrape or push deal. Check the link.');
+                // This outputs the exact technical error to the screen
+                showStatus('error', '🚨 ERROR: ' + error.message);
             } finally {
                 btn.disabled = false;
                 btn.innerText = 'Scrape & Push Deal';
@@ -128,7 +140,11 @@
             status.className = type;
             status.innerText = message;
             status.style.display = 'block';
-            setTimeout(() => { status.style.display = 'none'; }, 5000);
+            
+            // Keeps success messages brief, but leaves error messages up so you can read them
+            if(type === 'success') {
+                setTimeout(() => { status.style.display = 'none'; }, 5000);
+            }
         }
     </script>
 </body>

@@ -102,11 +102,21 @@
                 statusEl.innerHTML += `[${i+1}] Scraping ${platform}... `;
 
                 try {
-                    // YOUR ORIGINAL WORKING API CALL
                     const scraperUrl = `https://api.scraperapi.com/?api_key=6455cbfb43dbb193447b5d8ae4ca31e4&autoparse=true&premium=true&follow_redirect=true&url=${encodeURIComponent(url)}`;
                     const res = await fetch(scraperUrl);
                     const rawData = await res.text();
-                    const data = JSON.parse(rawData);
+                    
+                    let data;
+                    try {
+                        data = JSON.parse(rawData);
+                    } catch (parseError) {
+                        // This catches the HTML CAPTCHA/Error wall gracefully
+                        throw new Error("API returned HTML instead of JSON. Amazon likely served a CAPTCHA or ScraperAPI is overloaded.");
+                    }
+
+                    if (data.error) {
+                        throw new Error(`ScraperAPI Error: ${data.error}`);
+                    }
 
                     let payload = {};
 
@@ -139,7 +149,6 @@
                         };
                     }
 
-                    // YOUR ORIGINAL WORKING WEBHOOK PUSH
                     await fetch("https://script.google.com/macros/s/AKfycbyudKVJfTqmFZ7Pr33X6sWAvMhYuETeD7l_Gmz3z79dz8iSUzMp_-WTHNg1EPLiTgi8/exec", {
                         method: "POST", 
                         mode: "no-cors", 

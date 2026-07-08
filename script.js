@@ -42,9 +42,10 @@ const pages = {
             </div>
         </main>
 
-        <!-- Trust Rotator -->
+        <!-- Detailed Trust Rotator -->
         <div class="trust-rotator-container">
-            <div class="trust-rotator-text" id="trustText">🛡️ 100% Data-Verified Discounts</div>
+            <div class="trust-rotator-title" id="trustTitle">🛡️ 100% Data-Verified Discounts</div>
+            <div class="trust-rotator-desc" id="trustDesc">We don't rely on flashy marketing. Every single deal is cross-referenced against 90-day historical pricing data to guarantee you are getting a genuine price drop.</div>
         </div>
 
         <!-- 1000-Word SEO Article -->
@@ -319,27 +320,41 @@ function initDealOfTheDay() {
     }, 4000);
 }
 
-// --- TRUST ROTATOR LOGIC ---
+// --- TRUST ROTATOR LOGIC WITH PARAGRAPHS ---
 function initTrustRotator() {
-    const trustEl = document.getElementById('trustText');
-    if (!trustEl) return;
+    const titleEl = document.getElementById('trustTitle');
+    const descEl = document.getElementById('trustDesc');
+    if (!titleEl || !descEl) return;
     
     const messages = [
-        "🛡️ 100% Data-Verified Discounts",
-        "⚡ Direct Affiliate Links to Retailers",
-        "🚫 No Artificial Markups",
-        "🔍 Historical Pricing Validated"
+        {
+            title: "🛡️ 100% Data-Verified Discounts",
+            desc: "We don't rely on flashy marketing. Every single deal is cross-referenced against 90-day historical pricing data to guarantee you are getting a genuine price drop."
+        },
+        {
+            title: "⚡ Direct to Retailer",
+            desc: "No shady redirects or middleman landing pages. Our platform routes you directly to the official product pages on Amazon, Flipkart, or Myntra."
+        },
+        {
+            title: "🚫 No Artificial Markups",
+            desc: "Retailers often inflate the base price right before a sale. Our algorithm detects these fake markups and filters them out of your feed entirely."
+        }
     ];
+    
     let msgIndex = 0;
     
     trustInterval = setInterval(() => {
-        trustEl.style.opacity = 0;
+        titleEl.style.opacity = 0;
+        descEl.style.opacity = 0;
+        
         setTimeout(() => {
             msgIndex = (msgIndex + 1) % messages.length;
-            trustEl.innerText = messages[msgIndex];
-            trustEl.style.opacity = 1;
+            titleEl.innerText = messages[msgIndex].title;
+            descEl.innerText = messages[msgIndex].desc;
+            titleEl.style.opacity = 1;
+            descEl.style.opacity = 1;
         }, 500);
-    }, 3500);
+    }, 5000); // Wait 5 seconds per slide to allow reading time
 }
 
 // --- PRODUCT GRID RENDERER ---

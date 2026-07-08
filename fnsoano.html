@@ -3,190 +3,242 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <!-- SEO BLOCKER: Prevents search engines from indexing this page -->
+    <title>Admin | Smart Queue</title>
     <meta name="robots" content="noindex, nofollow">
-    <title>LinkFeed | Private</title>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;700;800&display=swap" rel="stylesheet">
     <style>
-        body { 
-            font-family: 'Plus Jakarta Sans', sans-serif; 
-            background: #f4f4f0; 
-            padding: 40px; 
-            color: #111; 
-            -webkit-user-select: none; 
-            user-select: none; 
-        }
-        .admin-box { 
-            max-width: 600px; 
-            margin: 0 auto; 
-            background: #fff; 
-            padding: 30px; 
-            border: 3px solid #111; 
-            border-radius: 16px; 
-            box-shadow: 6px 6px 0px #111; 
-        }
-        textarea, select, button, input { 
-            width: 100%; 
-            margin-bottom: 20px; 
-            padding: 12px; 
-            border: 3px solid #111; 
-            border-radius: 8px; 
-            font-family: inherit; 
-            font-weight: 700; 
-            font-size: 1rem; 
-            box-sizing: border-box; 
-        }
-        button { 
-            background: #baff29; 
-            cursor: pointer; 
-            transition: 0.2s; 
-        }
-        button:hover:not(:disabled) { 
-            transform: translate(-2px, -2px); 
-            box-shadow: 4px 4px 0px #111; 
-        }
-        button:disabled {
-            background: #ccc;
-            cursor: not-allowed;
-        }
-        #status { 
-            font-weight: 800; 
-            text-align: left; 
-            margin-top: 10px; 
-            line-height: 1.5; 
-            white-space: pre-wrap; 
-            font-size: 0.9rem;
-        }
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background: #0f172a; color: #fff; padding: 20px; max-width: 800px; margin: 0 auto; }
+        .box { background: #1e293b; padding: 30px; border-radius: 16px; margin-bottom: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.3); border: 1px solid #334155; }
+        h2 { margin-bottom: 20px; border-bottom: 2px solid #3b82f6; padding-bottom: 10px; }
+        label { display: block; margin: 15px 0 5px; font-size: 0.9rem; color: #94a3b8; font-weight: 700; }
+        textarea, select, input { width: 100%; padding: 12px; border-radius: 8px; border: 1px solid #334155; background: #0f172a; color: #fff; font-family: inherit; box-sizing: border-box; margin-bottom: 10px; }
+        textarea:focus, input:focus { border-color: #3b82f6; outline: none; }
+        button { background: #3b82f6; color: #fff; border: none; padding: 14px 20px; border-radius: 8px; font-weight: 800; cursor: pointer; transition: 0.2s; width: 100%; font-size: 1rem; }
+        button:hover:not(:disabled) { background: #2563eb; }
+        button:disabled { background: #475569; cursor: not-allowed; }
+        
+        /* Queue Styles */
+        .queue-item { background: #0f172a; border: 1px solid #334155; padding: 15px; border-radius: 8px; margin-bottom: 10px; }
+        .queue-item.success { border-color: #10b981; border-left: 5px solid #10b981; }
+        .queue-item.failed { border-color: #f59e0b; border-left: 5px solid #f59e0b; }
+        .url-text { font-size: 0.85rem; color: #94a3b8; word-break: break-all; margin-bottom: 10px; }
+        .status-text { font-weight: 700; font-size: 0.9rem; }
+        
+        /* Manual Fallback Form */
+        .manual-form { display: none; margin-top: 15px; padding-top: 15px; border-top: 1px dashed #334155; }
+        .manual-form.active { display: block; }
+        .force-btn { background: #f59e0b; margin-top: 10px; }
+        .force-btn:hover { background: #d97706; }
     </style>
 </head>
-<body oncontextmenu="return false;">
+<body>
 
-    <!-- LOOPHOLE PROTECTION: If JS is disabled, completely blank out the page -->
-    <noscript>
-        <style>
-            body { display: none !important; }
-        </style>
-        <div style="display: block !important; background: #fff; padding: 40px; text-align: center; font-family: sans-serif;">
-            <h2>JavaScript is required to access this page.</h2>
-        </div>
-    </noscript>
-
-    <!-- AUTHENTICATION PANEL -->
-    <div class="admin-box" id="authBox">
-        <h2>Enter Admin Password</h2>
-        <input type="password" id="password" placeholder="Password">
-        <button onclick="checkPassword()">Access Feed</button>
+    <div class="box" id="authBox">
+        <h2>Authentication</h2>
+        <input type="password" id="password" placeholder="Enter Admin Password">
+        <button onclick="checkAuth()">Login</button>
     </div>
 
-    <!-- MAIN ENGINE PANEL -->
-    <div class="admin-box" id="feedBox" style="display:none;">
-        <h2>Bulk Add Deals</h2>
-        <textarea id="urls" rows="6" placeholder="Paste Amazon or Flipkart links here (one per line)..."></textarea>
+    <div class="box" id="mainApp" style="display: none;">
+        <h2>Smart Deal Queue</h2>
+        <label>Bulk Link Entry (One per line)</label>
+        <textarea id="urls" rows="5" placeholder="Paste Amazon, Flipkart, or Myntra links here..."></textarea>
+        
+        <label>Category for this batch</label>
         <select id="category">
-            <option value="Tech">Tech</option>
-            <option value="Audio">Audio</option>
-            <option value="Lifestyle">Lifestyle</option>
-            <option value="Gaming">Gaming</option>
+            <option value="Smartphones">Smartphones</option>
+            <option value="Laptops & PC">Laptops & PC</option>
+            <option value="Audio & Earbuds">Audio & Earbuds</option>
+            <option value="Smartwatches">Smartwatches</option>
+            <option value="Tech Accessories">Tech Accessories</option>
+            <option value="Fashion & Apparel">Fashion & Apparel</option>
+            <option value="Home & Kitchen">Home & Kitchen</option>
+            <option value="Miscellaneous">Miscellaneous</option>
         </select>
-        <button onclick="processLinks()" id="submitBtn">Process Links</button>
-        <div id="status"></div>
+        
+        <button id="startBtn" onclick="startQueue()">Start Processing</button>
     </div>
+
+    <div id="queueContainer"></div>
 
     <script>
-        // PASSWORD LOGIC
-        function checkPassword() {
-            // Change "YOUR_PASSWORD_HERE" to your chosen password string
-            if (document.getElementById('password').value === "YOUR_PASSWORD_HERE") { 
+        // --- CONFIGURATION ---
+        const WEBHOOK_URL = 'PASTE_YOUR_NEW_WEB_APP_URL_HERE';
+        const SCRAPER_API_KEY = '6455cbfb43dbb193447b5d8ae4ca31e4';
+        
+        function checkAuth() {
+            if (document.getElementById('password').value === 'linkfeeder786') {
                 document.getElementById('authBox').style.display = 'none';
-                document.getElementById('feedBox').style.display = 'block';
-            } else { 
-                alert("Incorrect Password"); 
+                document.getElementById('mainApp').style.display = 'block';
+            } else {
+                alert('Invalid Password');
             }
         }
 
-        // KEYBOARD SHORTCUT BLOCKER (F12 and DevTools Inspect)
-        document.addEventListener('keydown', (e) => {
-            if (e.key === 'F12' || (e.ctrlKey && e.shiftKey && e.key === 'I')) {
-                e.preventDefault();
-            }
-        });
-
-        // DUAL-ENGINE SCRAPER AND GOOGLE SHEETS UPLOADER
-        async function processLinks() {
-            const urlsInput = document.getElementById('urls').value.trim();
-            const category = document.getElementById('category').value;
-            const statusEl = document.getElementById('status');
-            const btn = document.getElementById('submitBtn');
-            const urls = urlsInput.split('\n').map(u => u.trim()).filter(u => u);
-            
-            if (urls.length === 0) {
-                statusEl.textContent = "Please paste at least one link.";
-                statusEl.style.color = "red";
-                return;
-            }
-
-            btn.disabled = true;
-            statusEl.style.color = "#111";
-            statusEl.textContent = `Starting process for ${urls.length} links...\n\n`;
-
-            for (let i = 0; i < urls.length; i++) {
-                let url = urls[i];
-                let platform = url.includes('amazon') || url.includes('amzn') ? 'Amazon' : (url.includes('flipkart') ? 'Flipkart' : 'Unknown');
-
-                if (platform === 'Unknown') {
-                    statusEl.textContent += `[${i+1}] Skipped: Unsupported link platform.\n`;
-                    continue;
-                }
-
-                statusEl.textContent += `[${i+1}] Scraping ${platform}... \n`;
-
+        // --- URL SANITIZATION ENGINE ---
+        // Strips tracking parameters which heavily trigger Amazon's CAPTCHA
+        function sanitizeURL(rawUrl) {
+            let url = rawUrl.trim();
+            if (url.includes('amazon') || url.includes('amzn')) {
+                // If it's a short link, we can't easily sanitize it without expanding, leave it
+                if(url.includes('amzn.to') || url.includes('amzn.in')) return url; 
+                // Strip everything after the ASIN (Product ID)
                 try {
-                    const scraperUrl = `https://api.scraperapi.com/?api_key=6455cbfb43dbb193447b5d8ae4ca31e4&autoparse=true&premium=true&follow_redirect=true&url=${encodeURIComponent(url)}`;
-                    const res = await fetch(scraperUrl);
-                    const rawData = await res.text();
-                    const data = JSON.parse(rawData);
+                    const match = url.match(/\/dp\/([A-Z0-9]{10})/);
+                    if (match) return `https://www.amazon.in/dp/${match[1]}`;
+                } catch(e) {}
+            }
+            // For Flipkart & Myntra, drop query strings
+            return url.split('?')[0];
+        }
 
-                    let payload = {};
+        async function startQueue() {
+            const rawUrls = document.getElementById('urls').value.split('\n').filter(u => u.trim());
+            const category = document.getElementById('category').value;
+            const container = document.getElementById('queueContainer');
+            
+            if (rawUrls.length === 0) return alert('Paste some URLs first');
+            
+            document.getElementById('startBtn').disabled = true;
+            container.innerHTML = ''; // Clear previous queue
 
-                    if (platform === 'Amazon') {
-                        payload = {
-                            title: data.name || data.title || 'Untitled Amazon Product',
-                            category: category,
-                            price: data.pricing || data.price || '',
-                            oldPrice: data.list_price || data.rrp || '',
-                            image: (data.images && data.images[0]) ? data.images[0] : '',
-                            link: (url.includes('amzn.to') || url.includes('amzn.in') || url.includes('tag=')) ? url : (url.includes('?') ? `${url}&tag=affindi-21` : `${url}?tag=affindi-21`),
-                            platform: 'Amazon'
-                        };
-                    } else if (platform === 'Flipkart') {
-                        payload = {
-                            title: data.name || data.title || 'Untitled Flipkart Product',
-                            category: category,
-                            price: data.pricing || data.price || '',
-                            oldPrice: '',
-                            image: (data.images && data.images[0]) ? data.images[0] : '',
-                            link: url.split('?')[0], // Saves clean URL for Cuelinks/EarnKaro scripts
-                            platform: 'Flipkart'
-                        };
-                    }
+            for (let i = 0; i < rawUrls.length; i++) {
+                const originalUrl = rawUrls[i].trim();
+                const cleanUrl = sanitizeURL(originalUrl);
+                
+                // Build Queue UI Item
+                const itemId = `item-${i}`;
+                container.innerHTML += `
+                    <div class="queue-item" id="${itemId}">
+                        <div class="status-text" id="status-${itemId}" style="color: #3b82f6;">⏳ Processing...</div>
+                        <div class="url-text">${cleanUrl}</div>
+                        
+                        <!-- Hidden Manual Fallback Form -->
+                        <div class="manual-form" id="manual-${itemId}">
+                            <input type="text" id="title-${itemId}" placeholder="Product Title">
+                            <input type="text" id="price-${itemId}" placeholder="Price (e.g. ₹999)">
+                            <input type="text" id="img-${itemId}" placeholder="Image URL (Optional)">
+                            <button class="force-btn" onclick="forcePush('${itemId}', '${cleanUrl}', '${category}')">Force Push to Database</button>
+                        </div>
+                    </div>
+                `;
 
-                    // Push directly to Google Sheets App Script Webhook
-                    await fetch("https://script.google.com/macros/s/AKfycbyudKVJfTqmFZ7Pr33X6sWAvMhYuETeD7l_Gmz3z79dz8iSUzMp_-WTHNg1EPLiTgi8/exec", {
-                        method: "POST", 
-                        mode: "no-cors", 
-                        headers: { "Content-Type": "text/plain" }, 
-                        body: JSON.stringify(payload)
-                    });
-
-                    statusEl.textContent += `  -> Success! Saved to Sheet.\n`;
-                } catch (e) {
-                    statusEl.textContent += `  -> Error: ${e.message}\n`;
-                }
+                await processSingleLink(itemId, cleanUrl, originalUrl, category);
             }
             
-            statusEl.textContent += `\nAll entries processed!`;
+            document.getElementById('startBtn').disabled = false;
             document.getElementById('urls').value = '';
-            btn.disabled = false;
+        }
+
+        async function processSingleLink(itemId, cleanUrl, originalUrl, category) {
+            const statusEl = document.getElementById(`status-${itemId}`);
+            const itemBox = document.getElementById(itemId);
+            
+            try {
+                // Determine Platform & format affiliate tag
+                let platform = 'Unknown';
+                let finalAffiliateLink = cleanUrl;
+                
+                if (cleanUrl.includes('amazon') || cleanUrl.includes('amzn')) {
+                    platform = 'Amazon';
+                    finalAffiliateLink = originalUrl.includes('tag=') ? originalUrl : `${cleanUrl}?tag=affindi-21`;
+                } else if (cleanUrl.includes('flipkart') || cleanUrl.includes('fkrt')) {
+                    platform = 'Flipkart';
+                } else if (cleanUrl.includes('myntra')) {
+                    platform = 'Myntra';
+                }
+
+                if (platform === 'Unknown') throw new Error('Unsupported platform');
+
+                // Hit ScraperAPI
+                const scraperUrl = `https://api.scraperapi.com/?api_key=${SCRAPER_API_KEY}&autoparse=true&premium=true&url=${encodeURIComponent(cleanUrl)}`;
+                const res = await fetch(scraperUrl);
+                const rawText = await res.text();
+                
+                let data;
+                try {
+                    data = JSON.parse(rawText);
+                } catch (e) {
+                    throw new Error('CAPTCHA Blocked. API returned HTML.');
+                }
+
+                if (data.error) throw new Error(data.error);
+                if (!data.name && !data.title) throw new Error('No product data found in JSON.');
+
+                // Structure Payload
+                const payload = {
+                    Title: data.name || data.title,
+                    Category: category,
+                    Price: data.pricing || data.price || '',
+                    OldPrice: data.list_price || data.rrp || '',
+                    ImageURL: (data.images && data.images[0]) ? data.images[0] : '',
+                    AffiliateLink: finalAffiliateLink
+                };
+
+                // Push to Google Sheets
+                await pushToGoogle(payload);
+
+                // Update UI to Success
+                itemBox.classList.add('success');
+                statusEl.innerHTML = `✅ Success! Added to database.`;
+                statusEl.style.color = '#10b981';
+
+            } catch (error) {
+                // If it fails, update UI to Warning and open the Manual Form
+                itemBox.classList.add('failed');
+                statusEl.innerHTML = `⚠️ Failed: ${error.message}. Please enter details below.`;
+                statusEl.style.color = '#f59e0b';
+                document.getElementById(`manual-${itemId}`).classList.add('active');
+            }
+        }
+
+        async function forcePush(itemId, cleanUrl, category) {
+            const title = document.getElementById(`title-${itemId}`).value;
+            const price = document.getElementById(`price-${itemId}`).value;
+            const img = document.getElementById(`img-${itemId}`).value;
+            const btn = document.querySelector(`#manual-${itemId} button`);
+            
+            if(!title || !price) return alert("Title and Price are required.");
+            
+            btn.innerText = "Pushing...";
+            btn.disabled = true;
+
+            let finalAffiliateLink = cleanUrl;
+            if (cleanUrl.includes('amazon') || cleanUrl.includes('amzn')) {
+                finalAffiliateLink = `${cleanUrl}?tag=affindi-21`;
+            }
+
+            const payload = {
+                Title: title,
+                Category: category,
+                Price: price,
+                OldPrice: "",
+                ImageURL: img,
+                AffiliateLink: finalAffiliateLink
+            };
+
+            try {
+                await pushToGoogle(payload);
+                document.getElementById(`manual-${itemId}`).classList.remove('active');
+                document.getElementById(itemId).classList.remove('failed');
+                document.getElementById(itemId).classList.add('success');
+                document.getElementById(`status-${itemId}`).innerHTML = `✅ Manually pushed to database.`;
+                document.getElementById(`status-${itemId}`).style.color = '#10b981';
+            } catch (error) {
+                alert("Failed to connect to Google Sheets.");
+                btn.innerText = "Force Push to Database";
+                btn.disabled = false;
+            }
+        }
+
+        async function pushToGoogle(payload) {
+            const res = await fetch(WEBHOOK_URL, {
+                method: "POST",
+                mode: "no-cors",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(payload)
+            });
+            return res;
         }
     </script>
 </body>

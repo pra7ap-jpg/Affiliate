@@ -62,8 +62,8 @@
     <div id="queueContainer"></div>
 
     <script>
-        // --- CONFIGURATION ---
-        const WEBHOOK_URL = 'PASTE_YOUR_NEW_WEB_APP_URL_HERE';
+        // Your exact credentials
+        const WEBHOOK_URL = 'https://script.google.com/macros/s/AKfycbz7KsBjmLbH6YS_81YYfm1yqHZy82PdGfQ7p0SPLAootf6dygbdRSuACOYKBg61T0am/exec';
         const SCRAPER_API_KEY = '6455cbfb43dbb193447b5d8ae4ca31e4';
         
         function checkAuth() {
@@ -75,20 +75,16 @@
             }
         }
 
-        // --- URL SANITIZATION ENGINE ---
-        // Strips tracking parameters which heavily trigger Amazon's CAPTCHA
+        // Strips tracking parameters which heavily trigger CAPTCHAs
         function sanitizeURL(rawUrl) {
             let url = rawUrl.trim();
             if (url.includes('amazon') || url.includes('amzn')) {
-                // If it's a short link, we can't easily sanitize it without expanding, leave it
                 if(url.includes('amzn.to') || url.includes('amzn.in')) return url; 
-                // Strip everything after the ASIN (Product ID)
                 try {
                     const match = url.match(/\/dp\/([A-Z0-9]{10})/);
                     if (match) return `https://www.amazon.in/dp/${match[1]}`;
                 } catch(e) {}
             }
-            // For Flipkart & Myntra, drop query strings
             return url.split('?')[0];
         }
 
@@ -100,20 +96,18 @@
             if (rawUrls.length === 0) return alert('Paste some URLs first');
             
             document.getElementById('startBtn').disabled = true;
-            container.innerHTML = ''; // Clear previous queue
+            container.innerHTML = ''; 
 
             for (let i = 0; i < rawUrls.length; i++) {
                 const originalUrl = rawUrls[i].trim();
                 const cleanUrl = sanitizeURL(originalUrl);
                 
-                // Build Queue UI Item
                 const itemId = `item-${i}`;
                 container.innerHTML += `
                     <div class="queue-item" id="${itemId}">
                         <div class="status-text" id="status-${itemId}" style="color: #3b82f6;">⏳ Processing...</div>
                         <div class="url-text">${cleanUrl}</div>
                         
-                        <!-- Hidden Manual Fallback Form -->
                         <div class="manual-form" id="manual-${itemId}">
                             <input type="text" id="title-${itemId}" placeholder="Product Title">
                             <input type="text" id="price-${itemId}" placeholder="Price (e.g. ₹999)">
@@ -135,7 +129,6 @@
             const itemBox = document.getElementById(itemId);
             
             try {
-                // Determine Platform & format affiliate tag
                 let platform = 'Unknown';
                 let finalAffiliateLink = cleanUrl;
                 
@@ -150,7 +143,7 @@
 
                 if (platform === 'Unknown') throw new Error('Unsupported platform');
 
-                // Hit ScraperAPI
+                // ScraperAPI Call
                 const scraperUrl = `https://api.scraperapi.com/?api_key=${SCRAPER_API_KEY}&autoparse=true&premium=true&url=${encodeURIComponent(cleanUrl)}`;
                 const res = await fetch(scraperUrl);
                 const rawText = await res.text();
@@ -165,7 +158,6 @@
                 if (data.error) throw new Error(data.error);
                 if (!data.name && !data.title) throw new Error('No product data found in JSON.');
 
-                // Structure Payload
                 const payload = {
                     Title: data.name || data.title,
                     Category: category,
@@ -175,18 +167,16 @@
                     AffiliateLink: finalAffiliateLink
                 };
 
-                // Push to Google Sheets
                 await pushToGoogle(payload);
 
-                // Update UI to Success
                 itemBox.classList.add('success');
                 statusEl.innerHTML = `✅ Success! Added to database.`;
                 statusEl.style.color = '#10b981';
 
             } catch (error) {
-                // If it fails, update UI to Warning and open the Manual Form
+                // Fails over to the manual form smoothly
                 itemBox.classList.add('failed');
-                statusEl.innerHTML = `⚠️ Failed: ${error.message}. Please enter details below.`;
+                statusEl.innerHTML = `⚠️ Failed: ${error.message}. Enter details below.`;
                 statusEl.style.color = '#f59e0b';
                 document.getElementById(`manual-${itemId}`).classList.add('active');
             }
@@ -232,10 +222,11 @@
         }
 
         async function pushToGoogle(payload) {
+            // THE FIX: Changed Content-Type to text/plain to bypass the CORS Preflight block
             const res = await fetch(WEBHOOK_URL, {
                 method: "POST",
                 mode: "no-cors",
-                headers: { "Content-Type": "application/json" },
+                headers: { "Content-Type": "text/plain;charset=utf-8" },
                 body: JSON.stringify(payload)
             });
             return res;

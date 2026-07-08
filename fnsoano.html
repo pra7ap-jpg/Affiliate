@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin | Auto-Scrape & Push (Debug Mode)</title>
+    <title>Admin | Auto-Scrape & Push (Bulletproof)</title>
     <meta name="robots" content="noindex, nofollow">
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@600;800&display=swap" rel="stylesheet">
     <style>
@@ -13,23 +13,29 @@
         label { display: block; margin-top: 20px; font-size: 0.95rem; color: #94a3b8; }
         input, select { width: 100%; padding: 14px; margin-top: 8px; border-radius: 12px; border: 1px solid #334155; background: #0f172a; color: #fff; box-sizing: border-box; font-size: 1rem; }
         input:focus, select:focus { outline: none; border-color: #3b82f6; }
+        
+        /* Manual Fields initially hidden */
+        #manualFields { display: none; margin-top: 20px; padding-top: 20px; border-top: 2px dashed #475569; }
+        
         button { width: 100%; padding: 16px; margin-top: 30px; background: #3b82f6; color: #fff; border: none; border-radius: 12px; font-weight: 800; font-size: 1.1rem; cursor: pointer; transition: 0.2s; }
         button:hover { background: #2563eb; }
         button:disabled { background: #475569; cursor: not-allowed; }
-        #statusMsg { display: none; margin-top: 20px; text-align: center; font-weight: 600; padding: 15px; border-radius: 8px; word-wrap: break-word; line-height: 1.5; }
+        
+        #statusMsg { display: none; margin-top: 20px; text-align: center; font-weight: 600; padding: 15px; border-radius: 8px; line-height: 1.5; }
         .success { background: rgba(74, 222, 128, 0.1); color: #4ade80; border: 1px solid #4ade80; }
         .error { background: rgba(239, 68, 68, 0.1); color: #ef4444; border: 1px solid #ef4444; }
+        .warning { background: rgba(245, 158, 11, 0.1); color: #fbbf24; border: 1px solid #fbbf24; }
     </style>
 </head>
 <body>
 
     <div class="admin-box">
-        <h2>Auto-Scrape Deal</h2>
+        <h2>Push Deal to Database</h2>
         
-        <label>Affiliate Link (Amazon/Flipkart)</label>
+        <label>1. Affiliate Link (Amazon/Flipkart)</label>
         <input type="url" id="affLink" required placeholder="Paste the product link here...">
 
-        <label>Category</label>
+        <label>2. Category</label>
         <select id="category" required>
             <option value="Smartphones">Smartphones</option>
             <option value="Laptops & PC">Laptops & PC</option>
@@ -43,17 +49,39 @@
             <option value="Gaming">Gaming</option>
             <option value="Fitness Gear">Fitness Gear</option>
             <option value="Luggage & Bags">Luggage & Bags</option>
-            <option value="Software & Subs">Software & Subs</option>
             <option value="Miscellaneous">Miscellaneous</option>
         </select>
 
-        <button id="submitBtn" onclick="scrapeAndPush()">Scrape & Push Deal</button>
+        <!-- Hidden Manual Override Fields -->
+        <div id="manualFields">
+            <h3 style="color: #fbbf24; font-size: 1rem; margin-bottom: 10px;">⚠️ Manual Override Activated</h3>
+            <label>Product Title</label>
+            <input type="text" id="manualTitle" placeholder="e.g., Apple iPhone 15">
+            
+            <label>Deal Price (₹)</label>
+            <input type="text" id="manualPrice" placeholder="e.g., ₹65,999">
+            
+            <label>Image URL</label>
+            <input type="url" id="manualImage" placeholder="Paste image address...">
+        </div>
+
+        <button id="submitBtn" onclick="handlePush()">Scrape & Push Deal</button>
         <div id="statusMsg"></div>
     </div>
 
     <script>
         const SCRAPER_API_KEY = '6455cbfb43dbb193447b5d8ae4ca31e4';
         const GOOGLE_WEBHOOK = 'https://script.google.com/macros/s/AKfycbyudKVJfTqmFZ7Pr33X6sWAvMhYuETeD7l_Gmz3z79dz8iSUzMp_-WTHNg1EPLiTgi8/exec';
+        
+        let isManualMode = false;
+
+        async function handlePush() {
+            if (isManualMode) {
+                await pushManually();
+            } else {
+                await scrapeAndPush();
+            }
+        }
 
         async function scrapeAndPush() {
             const link = document.getElementById('affLink').value.trim();
@@ -67,27 +95,20 @@
             }
 
             btn.disabled = true;
-            btn.innerText = 'Scraping Data... Please Wait (Up to 30s)';
+            btn.innerText = 'Bypassing Security... (Wait up to 30s)';
             status.style.display = 'none';
 
             try {
-                // 1. Fetch raw HTML using ScraperAPI
-                // Added render=true to force javascript execution in case Amazon is hiding the DOM
-                const scrapeUrl = `https://api.scraperapi.com/?api_key=${SCRAPER_API_KEY}&url=${encodeURIComponent(link)}&render=true`;
-                
+                // Added premium=true to use residential proxies and bypass CAPTCHAs
+                const scrapeUrl = `https://api.scraperapi.com/?api_key=${SCRAPER_API_KEY}&url=${encodeURIComponent(link)}&render=true&premium=true`;
                 const response = await fetch(scrapeUrl);
                 
-                if (!response.ok) {
-                    throw new Error(`ScraperAPI HTTP Error: ${response.status}`);
-                }
-                
+                if (!response.ok) throw new Error(`API Error: ${response.status}`);
                 const htmlText = await response.text();
 
-                // 2. Parse the HTML to extract data
                 const parser = new DOMParser();
                 const doc = parser.parseFromString(htmlText, 'text/html');
 
-                // Expanded selectors for Amazon Mobile & Desktop
                 const titleEl = doc.querySelector('#productTitle, #title, meta[property="og:title"], meta[name="title"], .VU-ZEz, .B_NuCI');
                 const priceEl = doc.querySelector('.a-price-whole, #priceblock_ourprice, .Nx9bqj, ._30jeq3, span.a-color-price');
                 const imgEl = doc.querySelector('#landingImage, #imgBlkFront, meta[property="og:image"], img.v2bfXq, img._396cs4');
@@ -96,43 +117,88 @@
                 let price = priceEl ? priceEl.innerText.replace(/[^0-9,]/g, '') : null;
                 const image = imgEl ? (imgEl.src || imgEl.content) : null;
 
-                if (!title || !image) {
-                    throw new Error('Missing Data. Title found: ' + (title ? 'Yes' : 'No') + ' | Image found: ' + (image ? 'Yes' : 'No') + '. Amazon might be serving a CAPTCHA.');
-                }
-                
-                if (price) price = '₹' + price;
-                else price = 'Check Site'; // Fallback if price is hidden
+                if (!title || !image) throw new Error('Amazon blocked the bot with a CAPTCHA.');
+                if (price) price = '₹' + price; else price = 'Check Site';
 
-                // 3. Push extracted data to your Google Sheet
                 btn.innerText = 'Pushing to Database...';
-
-                const formData = new FormData();
-                formData.append('Title', title);
-                formData.append('ImageURL', image);
-                formData.append('Price', price);
-                formData.append('OldPrice', ''); 
-                formData.append('AffiliateLink', link);
-                formData.append('Category', category);
-
-                const googleResponse = await fetch(GOOGLE_WEBHOOK, {
-                    method: 'POST',
-                    body: formData
-                });
-
-                if (!googleResponse.ok) {
-                    throw new Error(`Google Webhook Error: ${googleResponse.status}`);
-                }
-
+                await sendToGoogle(title, image, price, link, category);
                 showStatus('success', '✅ Deal Scraped & Pushed Successfully!');
                 document.getElementById('affLink').value = ''; 
 
             } catch (error) {
-                // This outputs the exact technical error to the screen
-                showStatus('error', '🚨 ERROR: ' + error.message);
+                console.error(error);
+                triggerManualMode();
+            } finally {
+                if(!isManualMode) {
+                    btn.disabled = false;
+                    btn.innerText = 'Scrape & Push Deal';
+                }
+            }
+        }
+
+        async function pushManually() {
+            const link = document.getElementById('affLink').value.trim();
+            const category = document.getElementById('category').value;
+            const title = document.getElementById('manualTitle').value.trim();
+            const price = document.getElementById('manualPrice').value.trim();
+            const image = document.getElementById('manualImage').value.trim();
+            const btn = document.getElementById('submitBtn');
+
+            if (!link || !title || !price || !image) {
+                showStatus('error', 'Please fill out all manual fields.');
+                return;
+            }
+
+            btn.disabled = true;
+            btn.innerText = 'Pushing Manual Deal...';
+
+            try {
+                await sendToGoogle(title, image, price, link, category);
+                showStatus('success', '✅ Manual Deal Pushed Successfully!');
+                
+                // Reset form
+                document.getElementById('affLink').value = '';
+                document.getElementById('manualTitle').value = '';
+                document.getElementById('manualPrice').value = '';
+                document.getElementById('manualImage').value = '';
+                resetToScrapeMode();
+                
+            } catch (error) {
+                showStatus('error', 'Failed to push to Google Sheet.');
             } finally {
                 btn.disabled = false;
-                btn.innerText = 'Scrape & Push Deal';
             }
+        }
+
+        async function sendToGoogle(title, image, price, link, category) {
+            const formData = new FormData();
+            formData.append('Title', title);
+            formData.append('ImageURL', image);
+            formData.append('Price', price);
+            formData.append('OldPrice', ''); 
+            formData.append('AffiliateLink', link);
+            formData.append('Category', category);
+
+            const response = await fetch(GOOGLE_WEBHOOK, { method: 'POST', body: formData });
+            if (!response.ok) throw new Error('Webhook failed');
+        }
+
+        function triggerManualMode() {
+            isManualMode = true;
+            document.getElementById('manualFields').style.display = 'block';
+            const btn = document.getElementById('submitBtn');
+            btn.disabled = false;
+            btn.innerText = 'Push Deal Manually';
+            btn.style.background = '#fbbf24';
+            showStatus('warning', '🚨 Scraper Blocked by Retailer. Please enter details manually below.');
+        }
+
+        function resetToScrapeMode() {
+            isManualMode = false;
+            document.getElementById('manualFields').style.display = 'none';
+            const btn = document.getElementById('submitBtn');
+            btn.innerText = 'Scrape & Push Deal';
+            btn.style.background = '#3b82f6';
         }
 
         function showStatus(type, message) {
@@ -140,11 +206,7 @@
             status.className = type;
             status.innerText = message;
             status.style.display = 'block';
-            
-            // Keeps success messages brief, but leaves error messages up so you can read them
-            if(type === 'success') {
-                setTimeout(() => { status.style.display = 'none'; }, 5000);
-            }
+            if(type === 'success') { setTimeout(() => { status.style.display = 'none'; }, 5000); }
         }
     </script>
 </body>

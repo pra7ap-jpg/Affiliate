@@ -373,3 +373,22 @@ body {
     .category-drawer { width: 280px; }
     .page-container { margin: 20px; padding: 30px; }
 }
+
+/* --- AUTOMATIC STORE BADGES --- */
+.store-badge {
+    display: inline-block;
+    padding: 6px 12px;
+    border-radius: 12px;
+    font-size: 0.75rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 12px;
+    width: fit-content;
+}
+
+/* Brand Colors */
+.store-badge.amazon { background-color: #ff9900; color: #111; }
+.store-badge.flipkart { background-color: #2874f0; color: #fff; }
+.store-badge.myntra { background-color: #ff3f6c; color: #fff; }
+.store-badge.other { background-color: var(--border-light); color: var(--text-muted); }

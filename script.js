@@ -1,8 +1,10 @@
 let allProducts = [];
 let activeCategory = 'All';
 let currentSearchTerm = '';
+let dotdInterval;
+let trustInterval;
 
-// --- HAMBURGER MENU & DRAWER LOGIC ---
+// --- DRAWER LOGIC ---
 const menuToggle = document.getElementById('menuToggle');
 const drawer = document.getElementById('drawer');
 const overlay = document.getElementById('overlay');
@@ -20,22 +22,19 @@ overlay.addEventListener('click', toggleDrawer);
 const pages = {
     home: `
         <section class="trust-banner">
-            <h1>Curated. Verified. Unbeatable.</h1>
-            <div class="trust-grid">
-                <div class="trust-card">
-                    <h3>🛡️ Strict Verification</h3>
-                    <p>Every deal is analyzed against historical pricing data to ensure the discount is genuine.</p>
-                </div>
-                <div class="trust-card">
-                    <h3>⚡ Direct to Retailer</h3>
-                    <p>No middlemen. Clicking a deal takes you straight to the official Amazon or Flipkart product page.</p>
-                </div>
-                <div class="trust-card">
-                    <h3>🎯 Quality Filtered</h3>
-                    <p>We bypass the junk and only curate products with high consumer utility and brand reputation.</p>
-                </div>
-            </div>
+            <h1 class="animated-hero"><span>Curated.</span> <span>Verified.</span> <span>Unbeatable.</span></h1>
         </section>
+
+        <!-- Deal of the Day Rotator -->
+        <div class="dotd-container">
+            <div class="dotd-header">
+                <div class="dotd-pulse"></div>
+                <h2>Deal of the Day</h2>
+            </div>
+            <div class="dotd-wrapper" id="dotdWrapper">
+                <div style="text-align: center; padding: 50px; color: #64748b; font-weight: 600;">Finding top deals...</div>
+            </div>
+        </div>
 
         <main class="grid-container" id="productsGrid">
             <div style="grid-column: 1/-1; text-align: center; font-weight: 600; padding: 60px; font-size: 1.1rem; color: #64748b;">
@@ -43,12 +42,48 @@ const pages = {
             </div>
         </main>
 
-        <section class="full-disclosure">
-            <h2>Affiliate Transparency</h2>
-            <p><strong>Operational Model:</strong> FridayDeals is a reader-supported curation engine. Outbound clicks resulting in a purchase may generate a referral commission.</p>
-            <p><strong>Consumer Impact:</strong> The commission is levied entirely on the retailer's margin. The checkout price remains fundamentally identical whether routed through our tracking link or accessed independently.</p>
-            <p>We maintain independent operational control. Sponsored artificial deal placement is strictly prohibited.</p>
-        </section>
+        <!-- Trust Rotator -->
+        <div class="trust-rotator-container">
+            <div class="trust-rotator-text" id="trustText">🛡️ 100% Data-Verified Discounts</div>
+        </div>
+
+        <!-- 1000-Word SEO Article -->
+        <article class="seo-article">
+            <h2>The Ultimate Guide: Finding Genuine Discounts on Amazon, Flipkart & Myntra</h2>
+            <p>In the modern e-commerce landscape, navigating through endless "Mega Sales" and "Blockbuster Deals" can feel overwhelming. With artificial price inflation becoming a standard marketing tactic, consumers are constantly asking: <em>Are these discounts actually real?</em></p>
+            <p>At FridayDeals, we believe in radical transparency. Whether you are hunting for a hidden Amazon discount finder strategy, looking to decode Flipkart big billion days hidden tricks, or mastering Myntra end of reason sale hacks, you need data—not marketing hype. Here is our comprehensive guide to tracking genuine price history and outsmarting the algorithms.</p>
+            
+            <h3>1. The Reality of Artificial Price Inflation</h3>
+            <p>Before any major retail event, it is common practice for automated pricing algorithms to slowly increase the Maximum Retail Price (MRP) or the standard selling price of a product. When the sale officially begins, the price is "slashed" back down to its original value, creating the optical illusion of a massive discount. To bypass this, you must learn how to track genuine price history on Amazon India and Flipkart.</p>
+            
+            <h3>2. How to Track Real Price History on Amazon India</h3>
+            <p>Amazon prices fluctuate daily based on demand, inventory levels, and competitor pricing. To find the real bottom-line price, you cannot rely on the crossed-out red text. The secret is historical price mapping.</p>
+            <ul>
+                <li><strong>Analyze the 90-Day Average:</strong> A good deal is not just lower than the MRP; it must be significantly lower than the 90-day average selling price.</li>
+                <li><strong>Lightning Deal Traps:</strong> Flash sales create a false sense of urgency. Often, these items will return to an identical or lower price within three weeks. </li>
+                <li><strong>Hidden Coupons:</strong> Always check the checkbox below the pricing matrix. Amazon frequently hides 5% to 10% instant discount coupons that must be manually applied at checkout.</li>
+            </ul>
+
+            <h3>3. Mastering Flipkart Price Tracker History & Sale Secrets</h3>
+            <p>Flipkart operates heavily on bank partnerships and tiered discounting. Understanding their ecosystem is crucial to securing the lowest price during events like the Big Billion Days.</p>
+            <ul>
+                <li><strong>The Midnight Price Drop:</strong> Flipkart frequently updates its pricing algorithms at midnight (IST). If you are looking to purchase heavy electronics or smartphones, the lowest prices are historically captured between 12:00 AM and 1:30 AM.</li>
+                <li><strong>Card Offers vs. Direct Discounts:</strong> Flipkart deals are often structured around specific bank cards (e.g., SBI, Axis, ICICI). Always calculate the net price after the 10% instant bank discount. If you do not hold the required card, the "sale price" may actually be higher than standard days.</li>
+                <li><strong>The Cart Abandonment Hack:</strong> For non-essential items, adding a product to your cart and leaving it there for 48 hours can sometimes trigger a targeted push notification offering an exclusive 5% drop to complete the purchase.</li>
+            </ul>
+
+            <h3>4. Finding Genuine Myntra Coupon Codes Without Spam</h3>
+            <p>Myntra's pricing model is heavily reliant on dynamic coupon codes that change based on user behavior, cart value, and account age.</p>
+            <ul>
+                <li><strong>The Wishlist Price Drop Strategy:</strong> Myntra closely monitors wishlist activity. Instead of adding items directly to your cart, add them to your wishlist. Myntra’s algorithm frequently triggers exclusive "Wishlist Price Drop" coupons directly to your inbox to incentivize the final purchase.</li>
+                <li><strong>New Account vs. Old Account Profiling:</strong> E-commerce platforms offer deep discounts to acquire new users. If a coupon code is failing on your primary account, a fresh account creation may yield a flat ₹500 off on the exact same cart.</li>
+                <li><strong>End of Reason Sale (EORS) Reality:</strong> During EORS, focus strictly on premium, high-margin brands (Nike, Puma, Levi's). Fast-fashion brands are usually discounted year-round, meaning their EORS pricing is rarely a true anomaly.</li>
+            </ul>
+
+            <h3>5. Why FridayDeals Automates This Process</h3>
+            <p>Manually tracking prices across three different platforms, calculating bank discounts, and dodging artificial inflation is exhausting. That is exactly why FridayDeals exists. Our curation engine tracks historical pricing metrics in the background.</p>
+            <p>When an item hits our grid, it means it has passed strict verification. We verify that the discount is mathematically genuine, we link directly to the official retailer, and we ensure the product has a solid reputation. Stop guessing, and start relying on data-driven deals.</p>
+        </article>
     `,
     
     about: `
@@ -77,7 +112,6 @@ const pages = {
     privacy: `
         <main class="page-container">
             <h1>Privacy Policy</h1>
-            <p><em>Effective Date: July 2026</em></p>
             <p>At FridayDeals.online, we believe your data is yours. We have engineered our platform to function on a principle of absolute minimal data collection. This document outlines exactly what information we handle, how we use it, and how we protect it.</p>
             
             <h2>1. Information We Do Not Collect</h2>
@@ -93,17 +127,13 @@ const pages = {
 
             <h2>3. Third-Party Websites and Analytics</h2>
             <p>Our platform contains links to external retail sites. Once you click a deal and leave FridayDeals.online, you are subject to the privacy policies and terms of that specific retailer. We recommend reviewing the privacy protocols of any site you visit.</p>
-            <p>We may also use standard analytics tools (like Google Analytics) to understand general traffic patterns, such as which geographic regions our users are from and which types of deals are most popular. This data is aggregated and anonymized.</p>
-
-            <h2>4. Policy Updates</h2>
-            <p>We may update this policy periodically to reflect changes in legal requirements or operational practices. Any updates will be posted directly to this page.</p>
+            <p>We may also use standard analytics tools to understand general traffic patterns, such as which geographic regions our users are from and which types of deals are most popular. This data is aggregated and anonymized.</p>
         </main>
     `,
     
     terms: `
         <main class="page-container">
             <h1>Terms & Conditions</h1>
-            <p><em>Effective Date: July 2026</em></p>
             <p>By accessing or utilizing FridayDeals.online, you agree to be bound by the following terms of service. Please read them carefully.</p>
 
             <h2>1. Nature of the Platform</h2>
@@ -115,9 +145,6 @@ const pages = {
 
             <h2>3. Limitation of Liability regarding Transactions</h2>
             <p>Because we do not process transactions, we assume zero liability for the fulfillment of orders. Any dispute regarding shipping delays, damaged goods, returns, refunds, or customer service must be handled directly with the retailer where the transaction occurred (e.g., Amazon, Flipkart). We cannot intervene on your behalf.</p>
-
-            <h2>4. Intellectual Property</h2>
-            <p>The layout, design, copy, and curation methodology of FridayDeals.online are the property of our platform. Product images, brand names, and trademarks displayed on our site are the property of their respective owners and are used strictly for identification purposes under fair use.</p>
         </main>
     `,
     
@@ -159,9 +186,10 @@ function handleRouting() {
     appRoot.innerHTML = pages[hash];
     window.scrollTo(0, 0);
 
-    if (drawer.classList.contains('open')) {
-        toggleDrawer();
-    }
+    if (drawer.classList.contains('open')) toggleDrawer();
+
+    clearInterval(dotdInterval);
+    clearInterval(trustInterval);
 
     if (hash === 'home') {
         searchInput.style.display = 'block';
@@ -172,6 +200,8 @@ function handleRouting() {
         } else {
             renderFilters();
             applyFilters();
+            initDealOfTheDay();
+            initTrustRotator();
         }
         searchInput.addEventListener('input', handleSearch);
     } else {
@@ -196,6 +226,8 @@ function fetchDeals() {
                     if (window.location.hash === '' || window.location.hash === '#home') {
                         renderFilters();
                         applyFilters();
+                        initDealOfTheDay();
+                        initTrustRotator();
                     }
                 }
             });
@@ -209,9 +241,7 @@ function fetchDeals() {
 function renderFilters() {
     const filterContainer = document.getElementById('categoryFilters');
     if (!filterContainer) return;
-
     const categories = ['All', ...new Set(allProducts.map(p => p.Category || p.category).filter(Boolean))];
-    
     filterContainer.innerHTML = categories.map(cat => 
         `<button class="filter-btn ${activeCategory === cat ? 'active' : ''}" onclick="setCategory('${cat}')">${cat}</button>`
     ).join('');
@@ -231,21 +261,88 @@ function handleSearch(e) {
 
 function applyFilters() {
     let filtered = allProducts;
-    
     if (activeCategory !== 'All') {
         filtered = filtered.filter(p => (p.Category || p.category) === activeCategory);
     }
-    
     if (currentSearchTerm) {
         filtered = filtered.filter(p => {
             const title = (p.Title || p.title || '').toLowerCase();
             return title.includes(currentSearchTerm);
         });
     }
-    
     renderProducts(filtered);
 }
 
+// --- DEAL OF THE DAY LOGIC ---
+function initDealOfTheDay() {
+    const wrapper = document.getElementById('dotdWrapper');
+    if (!wrapper || allProducts.length === 0) return;
+
+    let uniqueCategories = [];
+    let topDeals = [];
+    
+    for (let product of allProducts) {
+        const cat = product.Category || product.category;
+        if (!uniqueCategories.includes(cat)) {
+            uniqueCategories.push(cat);
+            topDeals.push(product);
+        }
+        if (topDeals.length === 3) break;
+    }
+    
+    if (topDeals.length < 3) topDeals = allProducts.slice(0, 3);
+
+    wrapper.innerHTML = topDeals.map((product, index) => {
+        const title = product.Title || product.title;
+        const price = product.Price || product.price;
+        const img = product.ImageURL || product.image;
+        const link = product.AffiliateLink || product.link;
+        return `
+            <a href="${link}" target="_blank" class="dotd-slide ${index === 0 ? 'active' : ''}">
+                <img src="${img}" alt="${title}">
+                <div class="dotd-info">
+                    <h3>${title}</h3>
+                    <div class="dotd-price">${price}</div>
+                </div>
+            </a>
+        `;
+    }).join('');
+
+    const slides = wrapper.querySelectorAll('.dotd-slide');
+    if (slides.length <= 1) return;
+
+    let currentSlide = 0;
+    dotdInterval = setInterval(() => {
+        slides[currentSlide].classList.remove('active');
+        currentSlide = (currentSlide + 1) % slides.length;
+        slides[currentSlide].classList.add('active');
+    }, 4000);
+}
+
+// --- TRUST ROTATOR LOGIC ---
+function initTrustRotator() {
+    const trustEl = document.getElementById('trustText');
+    if (!trustEl) return;
+    
+    const messages = [
+        "🛡️ 100% Data-Verified Discounts",
+        "⚡ Direct Affiliate Links to Retailers",
+        "🚫 No Artificial Markups",
+        "🔍 Historical Pricing Validated"
+    ];
+    let msgIndex = 0;
+    
+    trustInterval = setInterval(() => {
+        trustEl.style.opacity = 0;
+        setTimeout(() => {
+            msgIndex = (msgIndex + 1) % messages.length;
+            trustEl.innerText = messages[msgIndex];
+            trustEl.style.opacity = 1;
+        }, 500);
+    }, 3500);
+}
+
+// --- PRODUCT GRID RENDERER ---
 function renderProducts(products) {
     const grid = document.getElementById('productsGrid');
     if (!grid) return;
@@ -262,28 +359,22 @@ function renderProducts(products) {
         const img = product.ImageURL || product.image || '';
         const link = product.AffiliateLink || product.link || '#';
 
-        // --- STORE DETECTION ENGINE ---
         let store = 'Verified Deal';
         let storeClass = 'other';
         const urlString = link.toLowerCase();
         
         if (urlString.includes('amazon.in') || urlString.includes('amzn.to')) {
-            store = 'Amazon'; 
-            storeClass = 'amazon';
+            store = 'Amazon'; storeClass = 'amazon';
         } else if (urlString.includes('flipkart.com') || urlString.includes('fkrt.it')) {
-            store = 'Flipkart'; 
-            storeClass = 'flipkart';
+            store = 'Flipkart'; storeClass = 'flipkart';
         } else if (urlString.includes('myntra.com')) {
-            store = 'Myntra'; 
-            storeClass = 'myntra';
+            store = 'Myntra'; storeClass = 'myntra';
         }
 
         return `
             <a href="${link}" target="_blank" rel="noopener noreferrer" class="product-card">
                 <img src="${img}" alt="${title}" loading="lazy">
-                
                 <span class="store-badge ${storeClass}">${store}</span>
-                
                 <h3>${title}</h3>
                 <div class="price-row">
                     <span class="price">${price}</span>

@@ -3,42 +3,30 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    
-    <!-- Primary SEO Meta Tags -->
     <title>FridayDeals | Verified Price Drops & Curated Tech Gear</title>
     <meta name="description" content="Stop hunting for fake discounts. FridayDeals tracks historical pricing trends across Amazon and Flipkart to deliver genuine, data-verified price drops daily.">
     <meta name="robots" content="index, follow">
 
-    <!-- Open Graph / Facebook / WhatsApp / Telegram Meta Tags -->
     <meta property="og:type" content="website">
     <meta property="og:url" content="https://fridaydeals.online/">
-    <meta property="og:title" content="FridayDeals | Verified Price Drops & Curated Gear">
-    <meta property="og:description" content="Stop hunting for fake discounts. We track historical pricing trends across Amazon and Flipkart to deliver genuine, data-verified price drops daily.">
-    <!-- Replace the image URL below with a real absolute path to your brand asset or banner banner (dimensions 1200x630px recommended) -->
+    <meta property="og:title" content="FridayDeals | Verified Price Drops">
+    <meta property="og:description" content="Stop hunting for fake discounts. We track historical pricing trends to deliver genuine price drops.">
     <meta property="og:image" content="https://fridaydeals.online/assets/og-banner.png">
-    <meta property="og:site_name" content="FridayDeals">
 
-    <!-- Twitter Card Meta Tags -->
-    <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:url" content="https://fridaydeals.online/">
-    <meta name="twitter:title" content="FridayDeals | Verified Price Drops & Curated Gear">
-    <meta name="twitter:description" content="Stop hunting for fake discounts. We track historical pricing trends across Amazon and Flipkart to deliver genuine, data-verified price drops daily.">
-    <meta name="twitter:image" content="https://fridaydeals.online/assets/og-banner.png">
-
-    <!-- Premium Typography & Styling Linkage -->
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
 </head>
 <body oncontextmenu="return false;">
 
-    <!-- Smooth Sticky Header Navigation -->
     <nav class="smooth-nav">
         <div class="nav-content">
-            <a href="#home" class="logo">FridayDeals</a>
+            <a href="#home" class="logo">
+                <div class="logo-glow"></div>
+                FridayDeals
+            </a>
             
             <input type="text" id="searchInput" placeholder="Search curated deals..." class="search-bar">
             
-            <!-- Rounded Menu Toggle Hamburger -->
             <button class="hamburger" id="menuToggle" aria-label="Toggle Categories">
                 <span class="bar"></span>
                 <span class="bar"></span>
@@ -47,21 +35,14 @@
         </div>
     </nav>
 
-    <!-- Slide-out Smooth Category Drawer -->
     <aside class="category-drawer" id="drawer">
-        <div class="drawer-header">
-            <h2>Categories</h2>
-        </div>
-        <div id="categoryFilters" class="drawer-filters">
-            <!-- Categories dynamically injected via script.js -->
-        </div>
+        <div class="drawer-header"><h2>Categories</h2></div>
+        <div id="categoryFilters" class="drawer-filters"></div>
     </aside>
     <div class="drawer-overlay" id="overlay"></div>
 
-    <!-- Main Dynamic Content Engine (SPA Router Injects Here) -->
     <div id="app-root"></div>
 
-    <!-- Premium Frictionless Footer -->
     <footer class="smooth-footer">
         <div class="footer-links">
             <a href="#about">About</a>
@@ -69,12 +50,14 @@
             <a href="#terms">Terms</a>
             <a href="#contact">Contact</a>
         </div>
+        <div class="footer-disclaimer">
+            <strong>Affiliate Disclosure:</strong> FridayDeals is a reader-supported platform. We may earn a commission from purchases made through our links at zero extra cost to you.
+        </div>
         <div class="copyright">
             &copy; 2026 FridayDeals.online. All rights reserved.
         </div>
     </footer>
 
-    <!-- External Library & Application Core Execution -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.2/papaparse.min.js"></script>
     <script src="script.js"></script>
 </body>

@@ -1,110 +1,75 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Credwiser — India's Premier Credit Card & Demat Broker Intelligence</title>
-  <meta name="description" content="Unbiased, data-driven comparisons of 26+ Indian credit cards and top SEBI-registered stock brokers. Zero phone spam, genuine MITC terms, and net reward calculations." />
-  
-  <!-- Tailwind CSS & Google Fonts -->
-  <script src="https://cdn.tailwindcss.com"></script>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-  
-  <!-- Custom Stylesheet -->
-  <link rel="stylesheet" href="css/style.css" />
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FridayDeals | Verified Price Drops & Curated Tech Gear</title>
+    <meta name="cuelinks-verification" content ="VERIFY-CL-STWXUJ">
+    <meta name="description" content="Stop hunting for fake discounts. FridayDeals tracks historical pricing trends across Amazon and Flipkart to deliver genuine, data-verified price drops daily.">
+    <meta name="robots" content="index, follow">
+
+    <!-- Open Graph Meta Tags -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://fridaydeals.online/">
+    <meta property="og:title" content="FridayDeals | Verified Price Drops">
+    <meta property="og:description" content="Stop hunting for fake discounts. We track historical pricing trends to deliver genuine price drops.">
+    <meta property="og:image" content="https://fridaydeals.online/assets/og-banner.png">
+
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
 </head>
-<body class="bg-[#090D16] text-[#E2E8F0] min-h-screen flex flex-col font-['Plus_Jakarta_Sans',sans-serif]">
+<body oncontextmenu="return false;">
 
-  <!-- Simulated Browser URL Bar (Optional for client-side visual testing) -->
-  <div class="bg-[#05080E] border-b border-[#1E293B] px-4 py-2 text-xs flex items-center justify-between text-gray-400">
-    <div class="flex items-center space-x-2">
-      <span class="w-2.5 h-2.5 rounded-full bg-red-500/80"></span>
-      <span class="w-2.5 h-2.5 rounded-full bg-yellow-500/80"></span>
-      <span class="w-2.5 h-2.5 rounded-full bg-emerald-500/80"></span>
-      <span class="ml-3 font-mono text-emerald-400 bg-[#0F172A] px-3 py-1 rounded border border-[#1E293B] flex items-center gap-1.5" id="simulated-url">
-        https://credwiser.in/
-      </span>
-    </div>
-    <span class="hidden md:inline text-gray-500 text-[11px]">Clean Route Engine (No Hash Routing)</span>
-  </div>
-
-  <!-- Primary Header Navigation -->
-  <header class="sticky top-0 z-50 bg-[#090D16]/90 backdrop-blur-md border-b border-[#1E293B]">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
-      <a href="/" data-link class="flex items-center gap-2.5">
-        <div class="w-8 h-8 rounded-lg bg-gradient-to-tr from-emerald-500 to-teal-400 flex items-center justify-center text-black font-extrabold text-lg">C</div>
-        <span class="text-xl font-bold tracking-tight text-white">Cred<span class="text-emerald-400">wiser</span></span>
-      </a>
-
-      <!-- Desktop Nav -->
-      <nav class="hidden md:flex items-center gap-6 text-sm font-medium text-gray-300">
-        <a href="/cards" data-link class="hover:text-emerald-400 transition-colors">Credit Cards</a>
-        <a href="/brokers" data-link class="hover:text-emerald-400 transition-colors">Stock Brokers</a>
-        <a href="/compare" data-link class="hover:text-emerald-400 transition-colors">Compare</a>
-        <a href="/tools/reward-calculator" data-link class="hover:text-emerald-400 transition-colors">Calculator</a>
-        <a href="/tools/card-roast" data-link class="hover:text-emerald-400 transition-colors">Card Roast</a>
-        <a href="/faqs" data-link class="hover:text-emerald-400 transition-colors">FAQs</a>
-      </nav>
-
-      <div class="flex items-center gap-3">
-        <a href="/wizard" data-link class="bg-emerald-500 hover:bg-emerald-400 text-black px-4 py-2 rounded-lg font-semibold text-sm transition-all shadow-lg shadow-emerald-500/20">
-          Find My Match
-        </a>
-      </div>
-    </div>
-  </header>
-
-  <!-- Dynamic Page Mount Point -->
-  <main id="app" class="flex-grow"></main>
-
-  <!-- Global Footer -->
-  <footer class="bg-[#05080F] border-t border-[#1E293B] py-12 mt-20 text-gray-400 text-sm">
-    <div class="max-w-7xl mx-auto px-4 grid grid-cols-2 md:grid-cols-5 gap-8">
-      <div class="col-span-2">
-        <div class="flex items-center gap-2 mb-3">
-          <div class="w-7 h-7 rounded bg-emerald-500 text-black font-bold flex items-center justify-center">C</div>
-          <span class="text-lg font-bold text-white">Cred<span class="text-emerald-400">wiser</span></span>
+    <nav class="smooth-nav">
+        <div class="nav-content">
+            <!-- Logo with dynamic background glow and animated cart -->
+            <a href="#home" class="logo-wrapper">
+                <span class="logo">
+                    <div class="logo-glow"></div>
+                    FridayDeals
+                </span>
+                <svg class="animated-cart" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="9" cy="21" r="1"></circle>
+                    <circle cx="20" cy="21" r="1"></circle>
+                    <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
+                </svg>
+            </a>
+            
+            <input type="text" id="searchInput" placeholder="Search curated deals..." class="search-bar">
+            
+            <button class="hamburger" id="menuToggle" aria-label="Toggle Categories">
+                <span class="bar"></span>
+                <span class="bar"></span>
+                <span class="bar"></span>
+            </button>
         </div>
-        <p class="text-xs text-gray-400 leading-relaxed max-w-sm">
-          India's unbiased credit card intelligence and demat broker comparator. We do not sell your personal data or spam you with unwanted sales calls.
-        </p>
-      </div>
-      <div>
-        <h4 class="text-white font-semibold mb-3 text-xs uppercase tracking-wider">Intelligence</h4>
-        <ul class="space-y-2 text-xs">
-          <li><a href="/cards" data-link class="hover:text-white">All Credit Cards</a></li>
-          <li><a href="/brokers" data-link class="hover:text-white">Stock Brokers</a></li>
-          <li><a href="/compare" data-link class="hover:text-white">Compare Cards</a></li>
-          <li><a href="/tools/reward-calculator" data-link class="hover:text-white">Spend Calculator</a></li>
-        </ul>
-      </div>
-      <div>
-        <h4 class="text-white font-semibold mb-3 text-xs uppercase tracking-wider">Resources</h4>
-        <ul class="space-y-2 text-xs">
-          <li><a href="/faqs" data-link class="hover:text-white">12 Master FAQs</a></li>
-          <li><a href="/tools/card-roast" data-link class="hover:text-white">Card Roast Tool</a></li>
-          <li><a href="/wizard" data-link class="hover:text-white">30s Card Matcher</a></li>
-        </ul>
-      </div>
-      <div>
-        <h4 class="text-white font-semibold mb-3 text-xs uppercase tracking-wider">Legal & Transparency</h4>
-        <ul class="space-y-2 text-xs">
-          <li><a href="/about" data-link class="hover:text-white">About Us</a></li>
-          <li><a href="/privacy-policy" data-link class="hover:text-white">DPDP Privacy Policy</a></li>
-          <li><a href="/terms" data-link class="hover:text-white">Terms of Service</a></li>
-          <li><a href="/disclosure" data-link class="hover:text-white">Affiliate Disclosure</a></li>
-          <li><a href="/contact" data-link class="hover:text-white">Contact Us</a></li>
-        </ul>
-      </div>
-    </div>
-    <div class="max-w-7xl mx-auto px-4 mt-8 pt-8 border-t border-[#1E293B]/60 text-center text-xs text-gray-500">
-      &copy; <span id="year"></span> Credwiser. Built for Indian credit card holders & retail investors.
-    </div>
-  </footer>
+    </nav>
 
-  <!-- Application Modular Scripts -->
-  <script type="module" src="js/app.js"></script>
+    <aside class="category-drawer" id="drawer">
+        <div class="drawer-header"><h2>Categories</h2></div>
+        <div id="categoryFilters" class="drawer-filters"></div>
+    </aside>
+    <div class="drawer-overlay" id="overlay"></div>
+
+    <!-- Main Content Area -->
+    <div id="app-root"></div>
+
+    <footer class="smooth-footer">
+        <div class="footer-links">
+            <a href="#about">About</a>
+            <a href="#privacy">Privacy</a>
+            <a href="#terms">Terms</a>
+            <a href="#contact">Contact</a>
+        </div>
+        <div class="footer-disclaimer">
+            <strong>Affiliate Disclosure:</strong> FridayDeals is a reader-supported platform. We may earn a commission from purchases made through our links at zero extra cost to you.
+        </div>
+        <div class="copyright">
+            &copy; 2026 FridayDeals.online. All rights reserved.
+        </div>
+    </footer>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.2/papaparse.min.js"></script>
+    <script src="script.js"></script>
 </body>
 </html>

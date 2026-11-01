@@ -4,6 +4,17 @@ let currentSearchTerm = '';
 let dotdInterval;
 let trustInterval;
 
+// --- OUTPUT SAFETY ---
+// Sheet data is escaped before it reaches innerHTML, and only https:// links
+// are rendered, so a bad or tampered row can never inject markup or scripts.
+function escHtml(s) {
+    return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+}
+function safeUrl(u) {
+    const s = String(u == null ? '' : u).trim();
+    return /^https:\/\//i.test(s) ? escHtml(s) : '#';
+}
+
 // --- DRAWER LOGIC ---
 const menuToggle = document.getElementById('menuToggle');
 const drawer = document.getElementById('drawer');
@@ -284,8 +295,8 @@ function renderFilters() {
     const filterContainer = document.getElementById('categoryFilters');
     if (!filterContainer) return;
     const categories = ['All', ...new Set(allProducts.map(p => p.Category || p.category).filter(Boolean))];
-    filterContainer.innerHTML = categories.map(cat => 
-        `<button class="filter-btn ${activeCategory === cat ? 'active' : ''}" onclick="setCategory('${cat}')">${cat}</button>`
+    filterContainer.innerHTML = categories.map(cat =>
+        `<button class="filter-btn ${activeCategory === cat ? 'active' : ''}" onclick="setCategory('${cat.replace(/'/g, "\\'")}')">${escHtml(cat)}</button>`
     ).join('');
 }
 
@@ -319,7 +330,7 @@ function renderTiles() {
     wrap.innerHTML = categories.map(cat => `
         <button class="cat-tile ${activeCategory === cat ? 'active' : ''}" onclick="tileCategory('${cat.replace(/'/g, "\\'")}')">
             <span class="cat-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">${CATEGORY_ICONS[cat] || CATEGORY_ICONS['Miscellaneous']}</svg></span>
-            <span class="cat-name">${cat}</span>
+            <span class="cat-name">${escHtml(cat)}</span>
         </button>
     `).join('');
 }
@@ -339,7 +350,7 @@ function initHeroVisual() {
     if (!visual || allProducts.length === 0) return;
     const picks = allProducts.slice(0, 3);
     visual.innerHTML = picks.map((p, i) => `
-        <div class="hero-img hero-img-${i}"><img src="${p.ImageURL || p.image || ''}" alt="${(p.Title || p.title || '').replace(/"/g, '')}" loading="lazy"></div>
+        <div class="hero-img hero-img-${i}"><img src="${safeUrl(p.ImageURL || p.image || '')}" alt="${escHtml(p.Title || p.title || '')}" loading="lazy"></div>
     `).join('');
 }
 
@@ -360,7 +371,7 @@ function renderSearchResults() {
             const price = p.Price || p.price || '';
             const img = p.ImageURL || p.image || '';
             const link = p.AffiliateLink || p.link || '#';
-            return `<a class="sr-item" href="${link}" target="_blank" rel="noopener noreferrer"><img src="${img}" alt=""><span class="sr-text"><span class="sr-title">${title}</span><span class="sr-price">${price}</span></span></a>`;
+            return `<a class="sr-item" href="${safeUrl(link)}" target="_blank" rel="noopener noreferrer"><img src="${safeUrl(img)}" alt=""><span class="sr-text"><span class="sr-title">${escHtml(title)}</span><span class="sr-price">${escHtml(price)}</span></span></a>`;
         }).join('') + `<button class="sr-all" onclick="closeSearchPanel();document.getElementById('productsGrid').scrollIntoView({behavior:'smooth'})">See all results below ↓</button>`;
     } else {
         panel.innerHTML = `
@@ -469,11 +480,11 @@ function initDealOfTheDay() {
         const img = product.ImageURL || product.image;
         const link = product.AffiliateLink || product.link;
         return `
-            <a href="${link}" target="_blank" class="dotd-slide ${index === 0 ? 'active' : ''}">
-                <img src="${img}" alt="${title}">
+            <a href="${safeUrl(link)}" target="_blank" class="dotd-slide ${index === 0 ? 'active' : ''}">
+                <img src="${safeUrl(img)}" alt="${escHtml(title)}">
                 <div class="dotd-info">
-                    <h3>${title}</h3>
-                    <div class="dotd-price">${price}</div>
+                    <h3>${escHtml(title)}</h3>
+                    <div class="dotd-price">${escHtml(price)}</div>
                 </div>
             </a>
         `;
@@ -573,17 +584,17 @@ function renderProducts(products) {
         const discountBadge = discount >= 5 ? `<span class="discount-badge">${discount}% OFF</span>` : '';
 
         return `
-            <a href="${link}" target="_blank" rel="noopener noreferrer" class="product-card">
-                <img src="${img}" alt="${title}" loading="lazy">
+            <a href="${safeUrl(link)}" target="_blank" rel="noopener noreferrer" class="product-card">
+                <img src="${safeUrl(img)}" alt="${escHtml(title)}" loading="lazy">
                 ${discountBadge}
-                <button class="share-btn" data-share="${dealShareUrl(link)}" data-title="${encodeURIComponent(title)}" aria-label="Share this deal" title="Share this deal">
+                <button class="share-btn" data-share="${escHtml(dealShareUrl(link))}" data-title="${encodeURIComponent(title)}" aria-label="Share this deal" title="Share this deal">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="m8.6 13.5 6.8 4M15.4 6.5l-6.8 4"/></svg>
                 </button>
                 <span class="store-badge ${storeClass}">${store}</span>
-                <h3>${title}</h3>
+                <h3>${escHtml(title)}</h3>
                 <div class="price-row">
-                    <span class="price">${price}</span>
-                    <span class="old-price">${oldPrice}</span>
+                    <span class="price">${escHtml(price)}</span>
+                    <span class="old-price">${escHtml(oldPrice)}</span>
                 </div>
                 <div class="buy-btn-visual">${store !== 'Verified Deal' ? `View on ${store}` : 'Grab Deal'} ↗</div>
             </a>

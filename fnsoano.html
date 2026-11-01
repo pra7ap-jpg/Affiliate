@@ -16,14 +16,14 @@
         button { background: #3b82f6; color: #fff; border: none; padding: 14px 20px; border-radius: 8px; font-weight: 800; cursor: pointer; transition: 0.2s; width: 100%; font-size: 1rem; }
         button:hover:not(:disabled) { background: #2563eb; }
         button:disabled { background: #475569; cursor: not-allowed; }
-        
+
         /* Queue Styles */
         .queue-item { background: #0f172a; border: 1px solid #334155; padding: 15px; border-radius: 8px; margin-bottom: 10px; }
         .queue-item.success { border-color: #10b981; border-left: 5px solid #10b981; }
         .queue-item.failed { border-color: #f59e0b; border-left: 5px solid #f59e0b; }
         .url-text { font-size: 0.85rem; color: #94a3b8; word-break: break-all; margin-bottom: 10px; }
         .status-text { font-weight: 700; font-size: 0.9rem; }
-        
+
         /* Manual Fallback Form */
         .manual-form { display: none; margin-top: 15px; padding-top: 15px; border-top: 1px dashed #334155; }
         .manual-form.active { display: block; }
@@ -36,52 +36,75 @@
     <div class="box" id="authBox">
         <h2>Authentication</h2>
         <input type="password" id="password" placeholder="Enter Admin Password">
-        <button onclick="checkAuth()">Login</button>
+        <button id="loginBtn" onclick="checkAuth()">Login</button>
     </div>
 
     <div class="box" id="mainApp" style="display: none;">
         <h2>Smart Deal Queue</h2>
         <label>Bulk Link Entry (One per line)</label>
         <textarea id="urls" rows="5" placeholder="Paste Amazon, Flipkart, or Myntra links here..."></textarea>
-        
+
         <label>Category for this batch</label>
         <select id="category">
-            <option value="Diwali & Festive">Diwali & Festive</option>
+            <option value="Diwali & Festive">Diwali &amp; Festive</option>
             <option value="Chhath Special">Chhath Special</option>
             <option value="Smartphones">Smartphones</option>
-            <option value="Laptops & PC">Laptops & PC</option>
-            <option value="Audio & Earbuds">Audio & Earbuds</option>
+            <option value="Laptops & PC">Laptops &amp; PC</option>
+            <option value="Audio & Earbuds">Audio &amp; Earbuds</option>
             <option value="Smartwatches">Smartwatches</option>
             <option value="Tech Accessories">Tech Accessories</option>
-            <option value="Fashion & Apparel">Fashion & Apparel</option>
-            <option value="Home & Kitchen">Home & Kitchen</option>
+            <option value="Fashion & Apparel">Fashion &amp; Apparel</option>
+            <option value="Home & Kitchen">Home &amp; Kitchen</option>
             <option value="Miscellaneous">Miscellaneous</option>
         </select>
-        
+
         <button id="startBtn" onclick="startQueue()">Start Processing</button>
     </div>
 
     <div id="queueContainer"></div>
 
     <script>
-        // Your exact credentials
-        const WEBHOOK_URL = 'https://script.google.com/macros/s/AKfycbz7KsBjmLbH6YS_81YYfm1yqHZy82PdGfQ7p0SPLAootf6dygbdRSuACOYKBg61T0am/exec';
-        const SCRAPER_API_KEY = '6455cbfb43dbb193447b5d8ae4ca31e4';
-        
-        function checkAuth() {
-            if (document.getElementById('password').value === 'linkfeeder786') {
-                document.getElementById('authBox').style.display = 'none';
-                document.getElementById('mainApp').style.display = 'block';
-            } else {
-                alert('Invalid Password');
-            }
+        // SECURITY: this page contains no passwords, API keys or webhook URLs.
+        // The password typed at login is kept only in this variable (memory,
+        // never stored) and sent to /api/admin-add, which checks it on the
+        // server and does the scraping and Sheet writing with server-held keys.
+        let ADMIN_PW = '';
+
+        async function apiAdd(body) {
+            const res = await fetch('/api/admin-add', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(Object.assign({ password: ADMIN_PW }, body))
+            });
+            let data = {};
+            try { data = await res.json(); } catch (e) {}
+            if (!res.ok) throw new Error(data.error || ('Request failed (' + res.status + ')'));
+            return data;
         }
 
-        // Strips tracking parameters which heavily trigger CAPTCHAs
+        async function checkAuth() {
+            const btn = document.getElementById('loginBtn');
+            const pw = document.getElementById('password').value;
+            if (!pw) return alert('Enter the password first');
+            btn.disabled = true; btn.innerText = 'Checking...';
+            try {
+                ADMIN_PW = pw;
+                await apiAdd({ ping: true });
+                document.getElementById('password').value = '';
+                document.getElementById('authBox').style.display = 'none';
+                document.getElementById('mainApp').style.display = 'block';
+            } catch (e) {
+                ADMIN_PW = '';
+                alert(e.message === 'Invalid password' ? 'Invalid Password' : ('Login failed: ' + e.message));
+            }
+            btn.disabled = false; btn.innerText = 'Login';
+        }
+
+        // Strips tracking parameters which heavily trigger CAPTCHAs (display copy; the server does the same)
         function sanitizeURL(rawUrl) {
             let url = rawUrl.trim();
             if (url.includes('amazon') || url.includes('amzn')) {
-                if(url.includes('amzn.to') || url.includes('amzn.in')) return url; 
+                if(url.includes('amzn.to') || url.includes('amzn.in')) return url;
                 try {
                     const match = url.match(/\/dp\/([A-Z0-9]{10})/);
                     if (match) return `https://www.amazon.in/dp/${match[1]}`;
@@ -94,22 +117,22 @@
             const rawUrls = document.getElementById('urls').value.split('\n').filter(u => u.trim());
             const category = document.getElementById('category').value;
             const container = document.getElementById('queueContainer');
-            
+
             if (rawUrls.length === 0) return alert('Paste some URLs first');
-            
+
             document.getElementById('startBtn').disabled = true;
-            container.innerHTML = ''; 
+            container.innerHTML = '';
 
             for (let i = 0; i < rawUrls.length; i++) {
                 const originalUrl = rawUrls[i].trim();
                 const cleanUrl = sanitizeURL(originalUrl);
-                
+
                 const itemId = `item-${i}`;
                 container.innerHTML += `
                     <div class="queue-item" id="${itemId}">
                         <div class="status-text" id="status-${itemId}" style="color: #3b82f6;">⏳ Processing...</div>
                         <div class="url-text">${cleanUrl}</div>
-                        
+
                         <div class="manual-form" id="manual-${itemId}">
                             <input type="text" id="title-${itemId}" placeholder="Product Title">
                             <input type="text" id="price-${itemId}" placeholder="Price (e.g. ₹999)">
@@ -121,7 +144,7 @@
 
                 await processSingleLink(itemId, cleanUrl, originalUrl, category);
             }
-            
+
             document.getElementById('startBtn').disabled = false;
             document.getElementById('urls').value = '';
         }
@@ -129,52 +152,12 @@
         async function processSingleLink(itemId, cleanUrl, originalUrl, category) {
             const statusEl = document.getElementById(`status-${itemId}`);
             const itemBox = document.getElementById(itemId);
-            
+
             try {
-                let platform = 'Unknown';
-                let finalAffiliateLink = cleanUrl;
-                
-                if (cleanUrl.includes('amazon') || cleanUrl.includes('amzn')) {
-                    platform = 'Amazon';
-                    finalAffiliateLink = originalUrl.includes('tag=') ? originalUrl : `${cleanUrl}?tag=affindi-21`;
-                } else if (cleanUrl.includes('flipkart') || cleanUrl.includes('fkrt')) {
-                    platform = 'Flipkart';
-                } else if (cleanUrl.includes('myntra')) {
-                    platform = 'Myntra';
-                }
-
-                if (platform === 'Unknown') throw new Error('Unsupported platform');
-
-                // ScraperAPI Call
-                const scraperUrl = `https://api.scraperapi.com/?api_key=${SCRAPER_API_KEY}&autoparse=true&premium=true&url=${encodeURIComponent(cleanUrl)}`;
-                const res = await fetch(scraperUrl);
-                const rawText = await res.text();
-                
-                let data;
-                try {
-                    data = JSON.parse(rawText);
-                } catch (e) {
-                    throw new Error('CAPTCHA Blocked. API returned HTML.');
-                }
-
-                if (data.error) throw new Error(data.error);
-                if (!data.name && !data.title) throw new Error('No product data found in JSON.');
-
-                const payload = {
-                    Title: data.name || data.title,
-                    Category: category,
-                    Price: data.pricing || data.price || '',
-                    OldPrice: data.list_price || data.rrp || '',
-                    ImageURL: (data.images && data.images[0]) ? data.images[0] : '',
-                    AffiliateLink: finalAffiliateLink
-                };
-
-                await pushToGoogle(payload);
-
+                await apiAdd({ url: originalUrl, category: category });
                 itemBox.classList.add('success');
                 statusEl.innerHTML = `✅ Success! Added to database.`;
                 statusEl.style.color = '#10b981';
-
             } catch (error) {
                 // Fails over to the manual form smoothly
                 itemBox.classList.add('failed');
@@ -189,49 +172,24 @@
             const price = document.getElementById(`price-${itemId}`).value;
             const img = document.getElementById(`img-${itemId}`).value;
             const btn = document.querySelector(`#manual-${itemId} button`);
-            
+
             if(!title || !price) return alert("Title and Price are required.");
-            
+
             btn.innerText = "Pushing...";
             btn.disabled = true;
 
-            let finalAffiliateLink = cleanUrl;
-            if (cleanUrl.includes('amazon') || cleanUrl.includes('amzn')) {
-                finalAffiliateLink = `${cleanUrl}?tag=affindi-21`;
-            }
-
-            const payload = {
-                Title: title,
-                Category: category,
-                Price: price,
-                OldPrice: "",
-                ImageURL: img,
-                AffiliateLink: finalAffiliateLink
-            };
-
             try {
-                await pushToGoogle(payload);
+                await apiAdd({ url: cleanUrl, category: category, manual: { Title: title, Price: price, ImageURL: img } });
                 document.getElementById(`manual-${itemId}`).classList.remove('active');
                 document.getElementById(itemId).classList.remove('failed');
                 document.getElementById(itemId).classList.add('success');
                 document.getElementById(`status-${itemId}`).innerHTML = `✅ Manually pushed to database.`;
                 document.getElementById(`status-${itemId}`).style.color = '#10b981';
             } catch (error) {
-                alert("Failed to connect to Google Sheets.");
+                alert("Failed: " + error.message);
                 btn.innerText = "Force Push to Database";
                 btn.disabled = false;
             }
-        }
-
-        async function pushToGoogle(payload) {
-            // THE FIX: Changed Content-Type to text/plain to bypass the CORS Preflight block
-            const res = await fetch(WEBHOOK_URL, {
-                method: "POST",
-                mode: "no-cors",
-                headers: { "Content-Type": "text/plain;charset=utf-8" },
-                body: JSON.stringify(payload)
-            });
-            return res;
         }
     </script>
 </body>

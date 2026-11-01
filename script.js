@@ -21,10 +21,38 @@ overlay.addEventListener('click', toggleDrawer);
 // --- DYNAMIC CONTENT LIBRARY ---
 const pages = {
     home: `
-        <section class="trust-banner">
-            <h1 class="animated-hero"><span>Honest Deals.</span> <span>Checked Prices.</span> <span>Zero Hype.</span></h1>
-            <p class="hero-sub">Every deal on this page is hand-picked and price-checked before it is listed. Each link takes you straight to the retailer's own product page — no middlemen, and no inflated MRPs dressed up as discounts.</p>
-            <div class="trust-points"><span>✓ Price-checked before listing</span><span>✓ Direct retailer links</span><span>✓ No fake discounts</span></div>
+        <section class="hero-panel">
+            <div class="hero-copy">
+                <h1 class="animated-hero"><span>Find the Best</span> <span>Deals on</span> <span>Amazon</span></h1>
+                <p class="hero-sub">Handpicked price drops and honest recommendations. Every price is checked before it is listed, and every link takes you straight to the retailer's own page — no middlemen, no fake MRP games.</p>
+                <button class="hero-cta" onclick="document.getElementById('productsGrid').scrollIntoView({behavior:'smooth'})">Explore Top Picks →</button>
+                <div class="trust-points"><span>✓ Price-checked before listing</span><span>✓ Direct retailer links</span><span>✓ No fake discounts</span></div>
+            </div>
+            <div class="hero-visual" id="heroVisual"></div>
+        </section>
+
+        <section class="trust-strip">
+            <div class="trust-item">
+                <div class="trust-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2H2v10l9.3 9.3a1 1 0 0 0 1.4 0l8.6-8.6a1 1 0 0 0 0-1.4Z"/><circle cx="7" cy="7" r="1.6"/></svg></div>
+                <div><h4>Curated Picks</h4><p>Only the best products</p></div>
+            </div>
+            <div class="trust-item">
+                <div class="trust-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-3.6 8-10V5l-8-3-8 3v7c0 6.4 8 10 8 10Z"/><path d="m9 11.5 2 2 4-4.5"/></svg></div>
+                <div><h4>Price-Checked</h4><p>Verified before listing</p></div>
+            </div>
+            <div class="trust-item">
+                <div class="trust-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.5.5l3-3a5 5 0 0 0-7-7l-1.7 1.7"/><path d="M14 11a5 5 0 0 0-7.5-.5l-3 3a5 5 0 0 0 7 7l1.7-1.7"/></svg></div>
+                <div><h4>Direct Links</h4><p>Straight to the retailer</p></div>
+            </div>
+            <div class="trust-item">
+                <div class="trust-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v3"/><path d="M5 21h14"/><path d="M12 6v15"/><path d="M3 13l3-7 3 7a3.5 3.5 0 0 1-6 0Z"/><path d="M15 13l3-7 3 7a3.5 3.5 0 0 1-6 0Z"/></svg></div>
+                <div><h4>Honest Prices</h4><p>No inflated MRP tricks</p></div>
+            </div>
+        </section>
+
+        <section class="cat-section">
+            <div class="section-head"><h2>Popular Categories</h2></div>
+            <div id="categoryTiles" class="cat-tiles"></div>
         </section>
 
         <!-- Deal of the Day Rotator -->
@@ -38,6 +66,7 @@ const pages = {
             </div>
         </div>
 
+        <div class="section-head top-picks-head"><h2>Top Picks</h2><span class="top-picks-note">Checked &amp; updated daily</span></div>
         <main class="grid-container" id="productsGrid">
             <div style="grid-column: 1/-1; text-align: center; font-weight: 600; padding: 60px; font-size: 1.1rem; color: #64748b;">
                 Hunting the latest deals...
@@ -179,6 +208,12 @@ document.addEventListener('DOMContentLoaded', () => {
     window.addEventListener('hashchange', handleRouting);
 });
 
+// Close the search panel when tapping anywhere outside it
+document.addEventListener('click', (e) => {
+    if (!e.target.closest('.search-wrap')) closeSearchPanel();
+    if (!e.target.closest('.share-btn') && !e.target.closest('#shareMenu')) hideShareMenu();
+});
+
 function handleRouting() {
     const appRoot = document.getElementById('app-root');
     const searchInput = document.getElementById('searchInput');
@@ -202,6 +237,8 @@ function handleRouting() {
             fetchDeals();
         } else {
             renderFilters();
+            renderTiles();
+            initHeroVisual();
             applyFilters();
             initDealOfTheDay();
             initTrustRotator();
@@ -228,6 +265,8 @@ function fetchDeals() {
                     allProducts = results.data.reverse(); 
                     if (window.location.hash === '' || window.location.hash === '#home') {
                         renderFilters();
+                        renderTiles();
+                        initHeroVisual();
                         applyFilters();
                         initDealOfTheDay();
                         initTrustRotator();
@@ -257,9 +296,138 @@ function setCategory(category) {
     toggleDrawer(); 
 }
 
+// --- CATEGORY TILES (homepage) ---
+const CATEGORY_ICONS = {
+    'Tech': '<path d="M4 14v-2a8 8 0 0 1 16 0v2"/><rect x="2" y="14" width="5" height="7" rx="2"/><rect x="17" y="14" width="5" height="7" rx="2"/>',
+    'Smartphones': '<rect x="7" y="2" width="10" height="20" rx="2"/><path d="M12 18h.01"/>',
+    'Laptops & PC': '<rect x="3" y="4" width="18" height="12" rx="2"/><path d="M2 20h20"/>',
+    'Audio & Earbuds': '<path d="M4 14v-2a8 8 0 0 1 16 0v2"/><rect x="2" y="14" width="5" height="7" rx="2"/><rect x="17" y="14" width="5" height="7" rx="2"/>',
+    'Audio': '<path d="M4 14v-2a8 8 0 0 1 16 0v2"/><rect x="2" y="14" width="5" height="7" rx="2"/><rect x="17" y="14" width="5" height="7" rx="2"/>',
+    'Smartwatches': '<rect x="7" y="6" width="10" height="12" rx="3"/><path d="M10 6V3h4v3M10 21v-3h4v3"/>',
+    'Tech Accessories': '<path d="M12 2H2v10l9.3 9.3a1 1 0 0 0 1.4 0l8.6-8.6a1 1 0 0 0 0-1.4Z"/><circle cx="7" cy="7" r="1.6"/>',
+    'Fashion & Apparel': '<path d="M20.4 3.6 16 2a4 4 0 0 1-8 0L3.6 3.6a2 2 0 0 0-1.3 2.3L4 11l3-1v11h10V10l3 1 1.7-5.1a2 2 0 0 0-1.3-2.3Z"/>',
+    'Home & Kitchen': '<path d="m3 11 9-8 9 8"/><path d="M5 10v10h14V10"/>',
+    'Diwali & Festive': '<path d="M12 3c1.8 2.6 2.7 4 2.7 5.7a2.7 2.7 0 1 1-5.4 0C9.3 7 10.2 5.6 12 3Z"/><path d="M3 15h18c0 3.3-2.7 6-6 6H9c-3.3 0-6-2.7-6-6Z"/>',
+    'Chhath Special': '<circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/>',
+    'Miscellaneous': '<rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/>'
+};
+
+function renderTiles() {
+    const wrap = document.getElementById('categoryTiles');
+    if (!wrap) return;
+    const categories = [...new Set(allProducts.map(p => p.Category || p.category).filter(Boolean))];
+    wrap.innerHTML = categories.map(cat => `
+        <button class="cat-tile ${activeCategory === cat ? 'active' : ''}" onclick="tileCategory('${cat.replace(/'/g, "\\'")}')">
+            <span class="cat-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">${CATEGORY_ICONS[cat] || CATEGORY_ICONS['Miscellaneous']}</svg></span>
+            <span class="cat-name">${cat}</span>
+        </button>
+    `).join('');
+}
+
+function tileCategory(category) {
+    activeCategory = category;
+    renderFilters();
+    renderTiles();
+    applyFilters();
+    const grid = document.getElementById('productsGrid');
+    if (grid) grid.scrollIntoView({ behavior: 'smooth' });
+}
+
+// --- HERO VISUAL (real product photos) ---
+function initHeroVisual() {
+    const visual = document.getElementById('heroVisual');
+    if (!visual || allProducts.length === 0) return;
+    const picks = allProducts.slice(0, 3);
+    visual.innerHTML = picks.map((p, i) => `
+        <div class="hero-img hero-img-${i}"><img src="${p.ImageURL || p.image || ''}" alt="${(p.Title || p.title || '').replace(/"/g, '')}" loading="lazy"></div>
+    `).join('');
+}
+
+// --- SEARCH RESULTS PANEL (directly under the search bar) ---
+function renderSearchResults() {
+    const panel = document.getElementById('searchResults');
+    if (!panel) return;
+    const term = currentSearchTerm.trim();
+    if (!term) { panel.classList.remove('open'); panel.innerHTML = ''; return; }
+
+    const matches = allProducts.filter(p => (p.Title || p.title || '').toLowerCase().includes(term)).slice(0, 6);
+    const safeTerm = term.replace(/[<>&"]/g, '');
+    const amazonSearchUrl = `https://www.amazon.in/s?k=${encodeURIComponent(term)}&tag=affindi-21`;
+
+    if (matches.length > 0) {
+        panel.innerHTML = matches.map(p => {
+            const title = p.Title || p.title || '';
+            const price = p.Price || p.price || '';
+            const img = p.ImageURL || p.image || '';
+            const link = p.AffiliateLink || p.link || '#';
+            return `<a class="sr-item" href="${link}" target="_blank" rel="noopener noreferrer"><img src="${img}" alt=""><span class="sr-text"><span class="sr-title">${title}</span><span class="sr-price">${price}</span></span></a>`;
+        }).join('') + `<button class="sr-all" onclick="closeSearchPanel();document.getElementById('productsGrid').scrollIntoView({behavior:'smooth'})">See all results below ↓</button>`;
+    } else {
+        panel.innerHTML = `
+            <div class="sr-empty">Not on our list yet — our picks are hand-chosen, so the list stays short.</div>
+            <a class="sr-amazon" href="${amazonSearchUrl}" target="_blank" rel="noopener noreferrer">Search "${safeTerm}" on Amazon →</a>`;
+    }
+    panel.classList.add('open');
+}
+
+function closeSearchPanel() {
+    const panel = document.getElementById('searchResults');
+    if (panel) panel.classList.remove('open');
+}
+
+// --- SHARE A DEAL (link always stays on fridaydeals.online) ---
+function dealShareUrl(link) {
+    const m = String(link || '').match(/dp\/([A-Z0-9]{10})/i);
+    return m ? `${window.location.origin}/deal/${m[1].toUpperCase()}` : link;
+}
+
+function hideShareMenu() {
+    const menu = document.getElementById('shareMenu');
+    if (menu) menu.remove();
+}
+
+function openShareMenu(btn) {
+    hideShareMenu();
+    const url = btn.getAttribute('data-share');
+    const title = decodeURIComponent(btn.getAttribute('data-title') || 'Deal');
+    const text = encodeURIComponent(`${title}\n${url}`);
+    const urlEnc = encodeURIComponent(url);
+
+    const menu = document.createElement('div');
+    menu.id = 'shareMenu';
+    menu.innerHTML = `
+        <a href="https://t.me/share/url?url=${urlEnc}&text=${encodeURIComponent(title)}" target="_blank" rel="noopener">Telegram</a>
+        <a href="https://www.facebook.com/sharer/sharer.php?u=${urlEnc}" target="_blank" rel="noopener">Facebook</a>
+        <a href="https://wa.me/?text=${text}" target="_blank" rel="noopener">WhatsApp</a>
+        <button type="button" id="shareCopyBtn">Copy Link</button>
+    `;
+    document.body.appendChild(menu);
+
+    const rect = btn.getBoundingClientRect();
+    menu.style.top = (rect.bottom + 8) + 'px';
+    menu.style.left = Math.max(8, Math.min(rect.left, window.innerWidth - 190)) + 'px';
+
+    menu.querySelector('#shareCopyBtn').addEventListener('click', async (ev) => {
+        ev.preventDefault();
+        try { await navigator.clipboard.writeText(url); ev.target.textContent = 'Copied ✓'; }
+        catch { ev.target.textContent = url; }
+        setTimeout(hideShareMenu, 900);
+    });
+}
+
+document.addEventListener('click', (e) => {
+    const btn = e.target.closest('.share-btn');
+    if (btn) {
+        e.preventDefault();
+        e.stopPropagation();
+        openShareMenu(btn);
+    }
+});
+
 function handleSearch(e) {
     currentSearchTerm = e.target.value.toLowerCase();
     applyFilters();
+    renderSearchResults();
 }
 
 function applyFilters() {
@@ -408,13 +576,16 @@ function renderProducts(products) {
             <a href="${link}" target="_blank" rel="noopener noreferrer" class="product-card">
                 <img src="${img}" alt="${title}" loading="lazy">
                 ${discountBadge}
+                <button class="share-btn" data-share="${dealShareUrl(link)}" data-title="${encodeURIComponent(title)}" aria-label="Share this deal" title="Share this deal">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="m8.6 13.5 6.8 4M15.4 6.5l-6.8 4"/></svg>
+                </button>
                 <span class="store-badge ${storeClass}">${store}</span>
                 <h3>${title}</h3>
                 <div class="price-row">
                     <span class="price">${price}</span>
                     <span class="old-price">${oldPrice}</span>
                 </div>
-                <div class="buy-btn-visual">Grab Deal</div>
+                <div class="buy-btn-visual">${store !== 'Verified Deal' ? `View on ${store}` : 'Grab Deal'} ↗</div>
             </a>
         `;
     }).join('');

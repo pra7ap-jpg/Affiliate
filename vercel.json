@@ -1,0 +1,1 @@
+{"rewrites":[{"destination":"/api/deal?asin=:asin","source":"/deal/:asin"}]}

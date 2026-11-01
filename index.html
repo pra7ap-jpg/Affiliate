@@ -20,13 +20,30 @@
 </head>
 <body oncontextmenu="return false;">
 
+    <div class="festive-bar">✦ DIWALI SALE IS LIVE ✦ &nbsp;Great Indian Festival deals, price-checked daily&nbsp; ✦ &nbsp;Chhath Specials now added&nbsp; ✦</div>
+
     <nav class="smooth-nav">
         <div class="nav-content">
             <!-- Logo with dynamic background glow and animated cart -->
             <a href="#home" class="logo-wrapper">
+                <svg class="logo-diya" viewBox="0 0 48 32" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                    <defs>
+                        <linearGradient id="flameGrad" x1="0" y1="0" x2="0" y2="1">
+                            <stop offset="0%" stop-color="#fbbf24"/>
+                            <stop offset="100%" stop-color="#ea580c"/>
+                        </linearGradient>
+                        <linearGradient id="bowlGrad" x1="0" y1="0" x2="0" y2="1">
+                            <stop offset="0%" stop-color="#b45309"/>
+                            <stop offset="100%" stop-color="#7f1d1d"/>
+                        </linearGradient>
+                    </defs>
+                    <path d="M24 2 C27 7 29 9.5 29 13 a5 5 0 1 1 -10 0 C19 9.5 21 7 24 2 Z" fill="url(#flameGrad)"/>
+                    <path d="M4 19 h40 c0 6 -5 10 -11 10 H15 C9 29 4 25 4 19 Z" fill="url(#bowlGrad)"/>
+                    <ellipse cx="24" cy="19" rx="20" ry="2.6" fill="#f59e0b"/>
+                </svg>
                 <span class="logo">
                     <div class="logo-glow"></div>
-                    FridayDeals
+                    Friday<span class="logo-accent">Deals</span>
                 </span>
                 <svg class="animated-cart" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                     <circle cx="9" cy="21" r="1"></circle>
@@ -44,6 +61,7 @@
             </button>
         </div>
     </nav>
+    <div class="toran-strip" aria-hidden="true"></div>
 
     <aside class="category-drawer" id="drawer">
         <div class="drawer-header"><h2>Categories</h2></div>
@@ -55,6 +73,15 @@
     <div id="app-root"></div>
 
     <footer class="smooth-footer">
+        <div class="footer-logo">
+            <svg class="logo-diya small" viewBox="0 0 48 32" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                <path d="M24 2 C27 7 29 9.5 29 13 a5 5 0 1 1 -10 0 C19 9.5 21 7 24 2 Z" fill="#f59e0b"/>
+                <path d="M4 19 h40 c0 6 -5 10 -11 10 H15 C9 29 4 25 4 19 Z" fill="#7f1d1d"/>
+                <ellipse cx="24" cy="19" rx="20" ry="2.6" fill="#f59e0b"/>
+            </svg>
+            <span>Friday<span class="logo-accent">Deals</span></span>
+        </div>
+        <p class="footer-tag">Hand-picked deals from Amazon, Flipkart &amp; Myntra. Every price is checked before it reaches this page, and every link takes you straight to the retailer.</p>
         <div class="footer-links">
             <a href="#about">About</a>
             <a href="#privacy">Privacy</a>

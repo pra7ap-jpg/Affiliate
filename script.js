@@ -22,7 +22,9 @@ overlay.addEventListener('click', toggleDrawer);
 const pages = {
     home: `
         <section class="trust-banner">
-            <h1 class="animated-hero"><span>Curated.</span> <span>Verified.</span> <span>Unbeatable.</span></h1>
+            <h1 class="animated-hero"><span>Honest Deals.</span> <span>Checked Prices.</span> <span>Zero Hype.</span></h1>
+            <p class="hero-sub">Every deal on this page is hand-picked and price-checked before it is listed. Each link takes you straight to the retailer's own product page — no middlemen, and no inflated MRPs dressed up as discounts.</p>
+            <div class="trust-points"><span>✓ Price-checked before listing</span><span>✓ Direct retailer links</span><span>✓ No fake discounts</span></div>
         </section>
 
         <!-- Deal of the Day Rotator -->
@@ -363,7 +365,18 @@ function renderProducts(products) {
     if (!grid) return;
 
     if (products.length === 0) {
-        grid.innerHTML = '<div style="grid-column: 1 / -1; text-align: center; padding: 40px 0; font-weight: 600; color: #64748b;">0 Results Found.</div>';
+        if (currentSearchTerm) {
+            const safeTerm = currentSearchTerm.replace(/[<>&"]/g, '');
+            const amazonSearchUrl = `https://www.amazon.in/s?k=${encodeURIComponent(currentSearchTerm)}&tag=affindi-21`;
+            grid.innerHTML = `
+                <div class="amazon-fallback">
+                    <h3>We haven't listed "${safeTerm}" yet</h3>
+                    <p>Our list is hand-picked, so it stays short. You can still see every option and today's live price directly on Amazon:</p>
+                    <a class="amazon-search-btn" href="${amazonSearchUrl}" target="_blank" rel="noopener noreferrer">Search "${safeTerm}" on Amazon →</a>
+                </div>`;
+        } else {
+            grid.innerHTML = '<div style="grid-column: 1 / -1; text-align: center; padding: 40px 0; font-weight: 600; color: #64748b;">0 Results Found.</div>';
+        }
         return;
     }
 
@@ -405,4 +418,10 @@ function renderProducts(products) {
             </a>
         `;
     }).join('');
+
+    if (currentSearchTerm) {
+        const safeTerm = currentSearchTerm.replace(/[<>&"]/g, '');
+        const amazonSearchUrl = `https://www.amazon.in/s?k=${encodeURIComponent(currentSearchTerm)}&tag=affindi-21`;
+        grid.innerHTML += `<div class="amazon-more"><a href="${amazonSearchUrl}" target="_blank" rel="noopener noreferrer">See more results for "${safeTerm}" on Amazon →</a></div>`;
+    }
 }

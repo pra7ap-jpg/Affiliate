@@ -101,7 +101,7 @@ body { font-family: 'Plus Jakarta Sans', sans-serif; background: var(--bg-color)
 /* --- PRODUCT GRID --- */
 #app-root { flex-grow: 1; }
 .grid-container { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 24px; max-width: 1200px; margin: 0 auto 50px; padding: 0 20px; }
-.product-card { display: flex; flex-direction: column; background: var(--surface); border: 1px solid var(--border-light); border-radius: 24px; padding: 20px; text-decoration: none; color: inherit; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05); transition: 0.3s cubic-bezier(0.16, 1, 0.3, 1); }
+.product-card { position: relative; display: flex; flex-direction: column; background: var(--surface); border: 1px solid var(--border-light); border-radius: 24px; padding: 20px; text-decoration: none; color: inherit; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05); transition: 0.3s cubic-bezier(0.16, 1, 0.3, 1); }
 .product-card:hover { transform: translateY(-8px); box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1); border-color: #cbd5e1; }
 .product-card img { width: 100%; height: 220px; object-fit: contain; background: var(--bg-color); border-radius: 16px; padding: 15px; margin-bottom: 15px; transition: 0.3s ease; }
 .product-card:hover img { transform: scale(1.02); }
@@ -117,6 +117,8 @@ body { font-family: 'Plus Jakarta Sans', sans-serif; background: var(--bg-color)
 .store-badge.flipkart { background: #2874f0; color: #fff; }
 .store-badge.myntra { background: #ff3f6c; color: #fff; }
 .store-badge.other { background: var(--border-light); color: var(--text-muted); }
+
+.discount-badge { position: absolute; top: 14px; right: 14px; z-index: 2; background: #16a34a; color: #fff; padding: 5px 9px; border-radius: 999px; font-size: 0.72rem; font-weight: 800; letter-spacing: 0.2px; box-shadow: 0 4px 10px rgba(22, 163, 74, 0.35); }
 
 /* --- TRUST ROTATOR W/ PARAGRAPHS --- */
 .trust-rotator-container { 
@@ -172,6 +174,18 @@ body { font-family: 'Plus Jakarta Sans', sans-serif; background: var(--bg-color)
     .dotd-slide { flex-direction: column; text-align: center; padding: 25px 20px; }
     .dotd-slide img { margin: 0 0 20px 0; height: 140px; width: 100%; }
     
+    /* Amazon-style duo cards: 2 columns on phone, 4 cards per screen */
+    .grid-container { grid-template-columns: repeat(2, 1fr); gap: 12px; padding: 0 12px; }
+    .product-card { padding: 12px; border-radius: 18px; }
+    .product-card img { height: 130px; padding: 8px; margin-bottom: 10px; border-radius: 12px; }
+    .product-card h3 { font-size: 0.85rem; }
+    .store-badge { font-size: 0.6rem; padding: 4px 8px; margin-bottom: 8px; border-radius: 8px; }
+    .price-row { gap: 6px; margin: 10px 0; flex-wrap: wrap; }
+    .price { font-size: 1.15rem; }
+    .old-price { font-size: 0.8rem; }
+    .buy-btn-visual { padding: 10px; font-size: 0.85rem; border-radius: 10px; }
+    .discount-badge { top: 8px; right: 8px; font-size: 0.62rem; padding: 4px 7px; }
+
     .trust-rotator-container { min-height: 240px; padding: 30px 20px; }
     .seo-article { margin: 20px; padding: 30px 20px; }
     .page-container { margin: 20px; padding: 30px 20px; }

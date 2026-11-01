@@ -386,9 +386,15 @@ function renderProducts(products) {
             store = 'Myntra'; storeClass = 'myntra';
         }
 
+        const priceNum = parseFloat(String(price).replace(/[^0-9.]/g, ''));
+        const oldNum = parseFloat(String(oldPrice).replace(/[^0-9.]/g, ''));
+        const discount = (oldNum > 0 && priceNum > 0 && oldNum > priceNum) ? Math.round((1 - priceNum / oldNum) * 100) : 0;
+        const discountBadge = discount >= 5 ? `<span class="discount-badge">${discount}% OFF</span>` : '';
+
         return `
             <a href="${link}" target="_blank" rel="noopener noreferrer" class="product-card">
                 <img src="${img}" alt="${title}" loading="lazy">
+                ${discountBadge}
                 <span class="store-badge ${storeClass}">${store}</span>
                 <h3>${title}</h3>
                 <div class="price-row">
